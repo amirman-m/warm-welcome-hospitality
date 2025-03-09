@@ -1,3 +1,4 @@
+
 type TranslationKey = 
   | 'welcome'
   | 'toHotel'
@@ -29,7 +30,14 @@ type TranslationKey =
   | 'dailyCleaning'
   | 'callFrontDesk'
   | 'askQuestion'
-  | 'backToMenu';
+  | 'backToMenu'
+  | 'chatWelcomeMessage'
+  | 'breakfastAnswer'
+  | 'checkoutAnswer'
+  | 'poolAnswer'
+  | 'generalAnswer'
+  | 'chatDescription'
+  | 'typeMessage';
 
 type Language = 'en' | 'fa' | 'ar';
 
