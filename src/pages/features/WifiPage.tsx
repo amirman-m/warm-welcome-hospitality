@@ -14,7 +14,7 @@ const WifiPage = () => {
     password: 'Welcome2023',
     steps: {
       en: [
-        'Open your device's Wi-Fi settings',
+        "Open your device's Wi-Fi settings",
         'Select "LuxuryHotel_Guest" from the available networks',
         'Enter the password provided below',
         'Open your browser and navigate to any website',
