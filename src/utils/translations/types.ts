@@ -1,76 +1,76 @@
 
-// Define the common language type
 export type Language = 'en' | 'fa' | 'ar';
 
-// Main translation key type that combines all feature-specific keys
 export type TranslationKey = 
-  | CommonKeys
-  | WifiKeys
-  | InformationKeys
-  | BookingKeys
-  | TaxiKeys
-  | CleaningKeys
-  | FrontDeskKeys
-  | ChatKeys;
-
-// Common UI and navigation keys
-export type CommonKeys = 
+  // Common keys
   | 'welcome'
   | 'toHotel'
+  | 'mainMenu'
+  | 'language'
+  | 'back'
+  | 'submit'
+  | 'success'
+  | 'error'
+  | 'loading'
+  
+  // Menu items
   | 'wifi'
   | 'information'
   | 'booking'
   | 'taxi'
   | 'cleaning'
-  | 'desk'
+  | 'frontDesk'
   | 'chat'
-  | 'backToMenu';
-
-// WiFi feature specific keys
-export type WifiKeys =
+  
+  // WiFi
   | 'wifiUsername'
   | 'wifiPassword'
-  | 'wifiInstructions';
-
-// Information feature specific keys
-export type InformationKeys =
-  | 'aboutHotel'
-  | 'entertainment'
-  | 'attractions';
-
-// Booking feature specific keys
-export type BookingKeys =
-  | 'breakfast'
-  | 'lunch'
-  | 'dinner'
-  | 'bookTable'
-  | 'tennis'
-  | 'basketball'
-  | 'coffee';
-
-// Taxi feature specific keys
-export type TaxiKeys =
+  | 'wifiInstructions'
+  
+  // Information
+  | 'hotelInfo'
+  | 'amenities'
+  | 'localAttractions'
+  | 'contactUs'
+  | 'hotelDescription'
+  | 'amenitiesList'
+  | 'attractionsList'
+  | 'contactInfo'
+  
+  // Booking
+  | 'checkIn'
+  | 'checkOut'
+  | 'adults'
+  | 'children'
+  | 'roomType'
+  | 'bookNow'
+  | 'bookedSuccessfully'
+  | 'standardRoom'
+  | 'deluxeRoom'
+  | 'suiteRoom'
+  
+  // Taxi
   | 'destination'
   | 'pickupTime'
-  | 'requestTaxi';
-
-// Cleaning feature specific keys
-export type CleaningKeys =
-  | 'callCleaning'
-  | 'scheduleTime'
-  | 'dailyCleaning';
-
-// Front desk feature specific keys
-export type FrontDeskKeys =
+  | 'requestTaxi'
+  
+  // Cleaning
+  | 'cleaningType'
+  | 'cleaningTime'
+  | 'requestCleaning'
+  | 'fullCleaning'
+  | 'quickCleaning'
+  | 'towelsOnly'
+  
+  // Front Desk
   | 'callFrontDesk'
-  | 'askQuestion';
-
-// Chat feature specific keys
-export type ChatKeys =
+  | 'askQuestion'
+  
+  // Chat
   | 'chatWelcomeMessage'
+  | 'chatDescription'
+  | 'typeMessage'
   | 'breakfastAnswer'
   | 'checkoutAnswer'
   | 'poolAnswer'
-  | 'generalAnswer'
-  | 'chatDescription'
-  | 'typeMessage';
+  | 'generalAnswer';
