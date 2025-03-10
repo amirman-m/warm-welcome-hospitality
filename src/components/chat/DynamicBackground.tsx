@@ -12,12 +12,8 @@ const DynamicBackground: React.FC<{ children: React.ReactNode }> = ({ children }
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening'>('morning');
   const [loaded, setLoaded] = useState(false);
 
+  // Set the time of day based on current time
   useEffect(() => {
-    // Pre-load image first to avoid blank background
-    const img = new Image();
-    img.src = backgrounds[timeOfDay];
-    img.onload = () => setLoaded(true);
-    
     const updateTimeOfDay = () => {
       const hour = new Date().getHours();
       if (hour >= 5 && hour < 12) {
@@ -38,32 +34,47 @@ const DynamicBackground: React.FC<{ children: React.ReactNode }> = ({ children }
     return () => clearInterval(interval);
   }, []);
 
-  // Update background when time of day changes
+  // Load the background image
   useEffect(() => {
-    if (timeOfDay) {
-      const img = new Image();
-      img.src = backgrounds[timeOfDay];
-      img.onload = () => setLoaded(true);
-    }
+    console.log(`Loading background image for ${timeOfDay}...`);
+    const img = new Image();
+    img.src = backgrounds[timeOfDay];
+    img.onload = () => {
+      console.log(`Background image for ${timeOfDay} loaded successfully`);
+      setLoaded(true);
+    };
+    img.onerror = (err) => {
+      console.error(`Failed to load background image for ${timeOfDay}:`, err);
+      // Fallback to show content even if image fails to load
+      setLoaded(true);
+    };
   }, [timeOfDay]);
 
   console.log("Background state:", { timeOfDay, loaded, backgroundUrl: backgrounds[timeOfDay] });
 
+  // Show a loading state while waiting for the background image
   if (!loaded) {
-    return <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-      <div className="animate-pulse text-white">Loading...</div>
-    </div>;
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="animate-pulse text-white">Loading...</div>
+      </div>
+    );
   }
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
-      {/* Background image with higher z-index */}
-      <div
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000"
-        style={{ backgroundImage: `url(${backgrounds[timeOfDay]})` }}
+      {/* Background image */}
+      <div 
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ 
+          backgroundImage: `url(${backgrounds[timeOfDay]})`,
+          transition: 'opacity 1s ease'
+        }}
       />
+      
       {/* Overlay */}
       <div className="fixed inset-0 bg-black/50 backdrop-blur-[2px]" /> 
+      
       {/* Content with highest z-index */}
       <div className="relative z-10 min-h-screen">
         {children}

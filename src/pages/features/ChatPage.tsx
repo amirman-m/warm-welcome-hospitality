@@ -17,30 +17,39 @@ interface Message {
 const ChatPage: React.FC = () => {
   const { language, direction } = useLanguage();
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      text: getTranslation('howCanIHelp', language),
-      isBot: true,
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [showChat, setShowChat] = useState(false);
+  const [initialized, setInitialized] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  // Force render to ensure component is properly mounted
-  const [mounted, setMounted] = useState(false);
+  // Initialize messages with welcome message
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (!initialized) {
+      try {
+        const welcomeMessage = getTranslation('howCanIHelp', language);
+        console.log("Setting initial welcome message:", welcomeMessage);
+        
+        setMessages([{
+          id: 1,
+          text: welcomeMessage,
+          isBot: true,
+          timestamp: new Date(),
+        }]);
+        
+        setInitialized(true);
+      } catch (error) {
+        console.error("Error setting initial message:", error);
+      }
+    }
+  }, [language, initialized]);
 
+  // Show chat after delay
   useEffect(() => {
-    // Show chat after delay
-    console.log("Starting timer to show chat");
+    console.log("Starting timer to show chat...");
     const timer = setTimeout(() => {
       console.log("Timer complete - Setting showChat to true");
       setShowChat(true);
-    }, 5000);
+    }, 3000); // Reduced from 5000ms to 3000ms for better UX
 
     return () => {
       console.log("Clearing timer");
@@ -48,6 +57,7 @@ const ChatPage: React.FC = () => {
     };
   }, []);
 
+  // Scroll to bottom when new messages appear
   useEffect(() => {
     if (scrollAreaRef.current && showChat) {
       const scrollElement = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
@@ -108,7 +118,7 @@ const ChatPage: React.FC = () => {
     setInput(question);
   };
 
-  console.log("Chat page state:", { mounted, showChat, messagesCount: messages.length });
+  console.log("Chat page state:", { initialized, showChat, messagesCount: messages.length });
 
   return (
     <DynamicBackground>
@@ -126,11 +136,13 @@ const ChatPage: React.FC = () => {
               </p>
             </div>
             
-            <MessageList 
-              messages={messages}
-              scrollAreaRef={scrollAreaRef}
-              onQuickQuestionClick={handleQuickQuestion}
-            />
+            {initialized && (
+              <MessageList 
+                messages={messages}
+                scrollAreaRef={scrollAreaRef}
+                onQuickQuestionClick={handleQuickQuestion}
+              />
+            )}
             
             <ChatInput
               value={input}

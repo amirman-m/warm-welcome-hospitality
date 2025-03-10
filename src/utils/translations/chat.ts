@@ -87,5 +87,15 @@ export const chatTranslations: Record<string, Record<Language, string>> = {
     en: 'What are the check-out times?',
     fa: 'زمان تسویه چه ساعتی است؟',
     ar: 'ما هي أوقات المغادرة؟'
+  },
+  welcomeToHotel: {
+    en: 'Welcome to Hotel Services',
+    fa: 'به خدمات هتل خوش آمدید',
+    ar: 'مرحبًا بكم في خدمات الفندق'
+  },
+  loadingChat: {
+    en: 'Loading chat assistant...',
+    fa: 'در حال بارگذاری دستیار گفتگو...',
+    ar: 'جاري تحميل مساعد الدردشة...'
   }
 };
