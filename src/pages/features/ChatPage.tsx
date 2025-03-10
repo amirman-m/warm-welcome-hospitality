@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, Send, Clock, Wifi, Taxi } from 'lucide-react';
+import { MessageCircle, Send, Clock, Wifi, Car } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { getTranslation } from '@/utils/translations';
 import BackButton from '@/components/BackButton';
@@ -101,7 +101,7 @@ const ChatPage: React.FC = () => {
     );
   };
 
-  const handleQuickQuestion = (questionKey: string) => {
+  const handleQuickQuestion = (questionKey: 'breakfastTimeQuestion' | 'wifiQuestion' | 'taxiQuestion' | 'checkoutTimeQuestion') => {
     const question = getTranslation(questionKey, language);
     setInput(question);
     
@@ -192,7 +192,7 @@ const ChatPage: React.FC = () => {
                     className="flex items-center gap-2 text-start p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
                   >
                     <div className="w-8 h-8 rounded-full bg-hotel-gold/10 flex items-center justify-center">
-                      <Taxi className="w-4 h-4 text-hotel-gold" />
+                      <Car className="w-4 h-4 text-hotel-gold" />
                     </div>
                     <span className="text-hotel-charcoal">
                       {getTranslation('taxiQuestion', language)}
