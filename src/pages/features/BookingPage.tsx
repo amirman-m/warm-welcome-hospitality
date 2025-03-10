@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Calendar, Coffee, Utensils, Clock, CircleDot } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
@@ -141,5 +142,141 @@ const BookingPage = () => {
                 <button 
                   className={cn(
                     "py-3 rounded-lg transition-all duration-300 flex flex-col items-center justify-center",
-                   
+                    activeBooking === 'table' 
+                      ? 'bg-hotel-gold text-white'
+                      : 'bg-white/10 text-white hover:bg-white/20'
+                  )}
+                  onClick={() => setActiveBooking('table')}
+                >
+                  <Utensils className="w-6 h-6 mb-1" />
+                  <span>{getTranslation('bookTable', language)}</span>
+                </button>
+                
+                <button 
+                  className={cn(
+                    "py-3 rounded-lg transition-all duration-300 flex flex-col items-center justify-center",
+                    activeBooking === 'coffee' 
+                      ? 'bg-hotel-gold text-white'
+                      : 'bg-white/10 text-white hover:bg-white/20'
+                  )}
+                  onClick={() => setActiveBooking('coffee')}
+                >
+                  <Coffee className="w-6 h-6 mb-1" />
+                  <span>{getTranslation('coffee', language)}</span>
+                </button>
+              </div>
+            </div>
+            
+            {activeBooking === 'table' && (
+              <div className="glass-effect rounded-xl p-5 mb-6">
+                <h2 className="font-medium text-white mb-3">
+                  {getTranslation('selectMeal', language)}
+                </h2>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    className={cn(
+                      "py-2 px-3 rounded-lg text-sm transition-all",
+                      selectedMeal === 'breakfast'
+                        ? 'bg-hotel-gold text-white'
+                        : 'bg-white/10 text-white hover:bg-white/20'
+                    )}
+                    onClick={() => setSelectedMeal('breakfast')}
+                  >
+                    {getTranslation('breakfast', language)}
+                  </button>
+                  <button
+                    className={cn(
+                      "py-2 px-3 rounded-lg text-sm transition-all",
+                      selectedMeal === 'lunch'
+                        ? 'bg-hotel-gold text-white'
+                        : 'bg-white/10 text-white hover:bg-white/20'
+                    )}
+                    onClick={() => setSelectedMeal('lunch')}
+                  >
+                    {getTranslation('lunch', language)}
+                  </button>
+                  <button
+                    className={cn(
+                      "py-2 px-3 rounded-lg text-sm transition-all",
+                      selectedMeal === 'dinner'
+                        ? 'bg-hotel-gold text-white'
+                        : 'bg-white/10 text-white hover:bg-white/20'
+                    )}
+                    onClick={() => setSelectedMeal('dinner')}
+                  >
+                    {getTranslation('dinner', language)}
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            <div className="glass-effect rounded-xl p-5 mb-6">
+              <h2 className="font-medium text-white mb-3 flex items-center">
+                <Clock className="w-5 h-5 mr-2" />
+                {getTranslation('selectTime', language)}
+              </h2>
+              <div className="grid grid-cols-4 gap-2">
+                {timeSlots.map((time) => (
+                  <button
+                    key={time}
+                    className={cn(
+                      "py-2 rounded-lg text-sm transition-all",
+                      selectedTime === time
+                        ? 'bg-hotel-gold text-white'
+                        : 'bg-white/10 text-white hover:bg-white/20'
+                    )}
+                    onClick={() => setSelectedTime(time)}
+                  >
+                    {time}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {activeBooking === 'table' && (
+              <div className="glass-effect rounded-xl p-5 mb-6">
+                <h2 className="font-medium text-white mb-3 flex items-center">
+                  <CircleDot className="w-5 h-5 mr-2" />
+                  {getTranslation('selectTable', language)}
+                </h2>
+                <div className="grid grid-cols-4 gap-2">
+                  {tables.map((table) => (
+                    <button
+                      key={table.id}
+                      disabled={!table.available}
+                      className={cn(
+                        "relative py-2 rounded-lg text-sm transition-all",
+                        selectedTable === table.id
+                          ? 'bg-hotel-gold text-white'
+                          : table.available
+                            ? 'bg-white/10 text-white hover:bg-white/20'
+                            : 'bg-gray-400/20 text-gray-400 cursor-not-allowed'
+                      )}
+                      onClick={() => table.available && setSelectedTable(table.id)}
+                    >
+                      {table.id}
+                      {!table.available && (
+                        <span className="absolute inset-0 flex items-center justify-center text-xs">
+                          {getTranslation('booked', language)}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            <button
+              className="w-full bg-hotel-gold text-white py-3 rounded-xl font-medium hover:opacity-90 transition-all active:scale-95"
+              onClick={handleBook}
+            >
+              {getTranslation('book', language)}
+            </button>
+          </div>
+        )}
+      </div>
+    </DynamicBackground>
+  );
+};
 
+export default BookingPage;
