@@ -95,10 +95,14 @@ const WifiPage = () => {
       {/* Dark overlay with blur */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]" />
       
-      {/* Navigation controls */}
-      <div className="relative z-10">
-        <LanguageToggle />
-        <BackButton />
+      {/* Navigation controls - moved to separate div with higher z-index */}
+      <div className="fixed top-0 left-0 right-0 z-50 p-6 flex justify-between pointer-events-none">
+        <div className="pointer-events-auto">
+          <BackButton />
+        </div>
+        <div className="pointer-events-auto">
+          <LanguageToggle />
+        </div>
       </div>
       
       {/* Header */}
