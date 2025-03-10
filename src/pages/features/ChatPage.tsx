@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { getTranslation } from '@/utils/translations';
@@ -24,16 +25,25 @@ const ChatPage: React.FC = () => {
       timestamp: new Date(),
     },
   ]);
+  const [showChat, setShowChat] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollAreaRef.current) {
+    const timer = setTimeout(() => {
+      setShowChat(true);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (scrollAreaRef.current && showChat) {
       const scrollElement = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
       if (scrollElement) {
         scrollElement.scrollTop = scrollElement.scrollHeight;
       }
     }
-  }, [messages]);
+  }, [messages, showChat]);
 
   const handleSendMessage = () => {
     if (!input.trim()) return;
@@ -91,28 +101,41 @@ const ChatPage: React.FC = () => {
       <div className={`min-h-screen flex flex-col ${direction === 'rtl' ? 'font-vazirmatn' : 'font-inter'}`}>
         <BackButton />
         
-        <div className="flex-1 flex flex-col p-4 pb-20 max-w-3xl mx-auto w-full">
-          <div className="text-center mb-4 animate-fade-in glass-effect rounded-xl p-4">
-            <h1 className="text-xl font-semibold text-white">
-              {getTranslation('hotelOnline', language)}
-            </h1>
-            <p className="text-white/80 text-sm mt-1">
-              {getTranslation('askAnyQuestion', language)}
-            </p>
+        {showChat ? (
+          <div className="flex-1 flex flex-col p-4 pb-20 max-w-3xl mx-auto w-full animate-slide-up">
+            <div className="text-center mb-4 animate-fade-in glass-effect rounded-xl p-4">
+              <h1 className="text-xl font-semibold text-white">
+                {getTranslation('hotelOnline', language)}
+              </h1>
+              <p className="text-white/80 text-sm mt-1">
+                {getTranslation('askAnyQuestion', language)}
+              </p>
+            </div>
+            
+            <MessageList 
+              messages={messages}
+              scrollAreaRef={scrollAreaRef}
+              onQuickQuestionClick={handleQuickQuestion}
+            />
+            
+            <ChatInput
+              value={input}
+              onChange={setInput}
+              onSend={handleSendMessage}
+            />
           </div>
-          
-          <MessageList 
-            messages={messages}
-            scrollAreaRef={scrollAreaRef}
-            onQuickQuestionClick={handleQuickQuestion}
-          />
-          
-          <ChatInput
-            value={input}
-            onChange={setInput}
-            onSend={handleSendMessage}
-          />
-        </div>
+        ) : (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center animate-pulse p-6 glass-effect rounded-2xl max-w-sm mx-auto">
+              <h1 className="text-2xl font-bold text-white mb-2">
+                {getTranslation('welcomeToHotel', language)}
+              </h1>
+              <p className="text-white/80">
+                {getTranslation('loadingChat', language)}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </DynamicBackground>
   );

@@ -10,6 +10,7 @@ const backgrounds = {
 
 const DynamicBackground: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening'>('morning');
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const updateTimeOfDay = () => {
@@ -25,16 +26,22 @@ const DynamicBackground: React.FC<{ children: React.ReactNode }> = ({ children }
 
     updateTimeOfDay();
     const interval = setInterval(updateTimeOfDay, 60000); // Check every minute
+    
+    // Preload background image
+    const img = new Image();
+    img.src = backgrounds[timeOfDay];
+    img.onload = () => setLoaded(true);
+    
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="relative min-h-screen">
       <div
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000"
+        className={`fixed inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ${loaded ? 'opacity-100' : 'opacity-0'}`}
         style={{ backgroundImage: `url(${backgrounds[timeOfDay]})` }}
       />
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-[2px]" /> {/* Enhanced overlay for better readability */}
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-[2px]" /> 
       <div className="relative z-10">
         {children}
       </div>
