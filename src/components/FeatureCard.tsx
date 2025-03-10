@@ -37,7 +37,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
       )}
       onClick={handleClick}
     >
-      <Icon className="w-8 h-8 mb-3 text-hotel-gold" />
+      <Icon className="w-8 h-8 mb-3 text-white" />
       <h3 className="font-medium text-white">{title}</h3>
     </div>
   );
