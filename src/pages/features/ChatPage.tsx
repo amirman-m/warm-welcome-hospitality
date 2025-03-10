@@ -1,12 +1,10 @@
+
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, Send, Clock, Wifi, Car } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { getTranslation } from '@/utils/translations';
 import BackButton from '@/components/BackButton';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar } from '@/components/ui/avatar';
+import MessageList from '@/components/chat/MessageList';
+import ChatInput from '@/components/chat/ChatInput';
 
 interface Message {
   id: number;
@@ -27,7 +25,6 @@ const ChatPage: React.FC = () => {
     },
   ]);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -84,26 +81,9 @@ const ChatPage: React.FC = () => {
     }, 800);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSendMessage();
-    }
-  };
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString(
-      language === 'en' ? 'en-US' : language === 'fa' ? 'fa-IR' : 'ar-SA', 
-      { hour: '2-digit', minute: '2-digit' }
-    );
-  };
-
   const handleQuickQuestion = (questionKey: 'breakfastTimeQuestion' | 'wifiQuestion' | 'taxiQuestion' | 'checkoutTimeQuestion') => {
     const question = getTranslation(questionKey, language);
     setInput(question);
-    
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
   };
 
   return (
@@ -120,112 +100,17 @@ const ChatPage: React.FC = () => {
           </p>
         </div>
         
-        <ScrollArea ref={scrollAreaRef} className="flex-1 bg-white rounded-xl shadow-sm p-4 mb-4">
-          <div className="space-y-4">
-            {messages.map((message) => (
-              <div 
-                key={message.id}
-                className={`flex ${message.isBot ? 'justify-start' : 'justify-end'}`}
-              >
-                <div className={`flex max-w-[80%] ${message.isBot ? 'flex-row' : 'flex-row-reverse'} items-start gap-2`}>
-                  {message.isBot && (
-                    <Avatar className="mt-1">
-                      <div className="w-8 h-8 rounded-full bg-hotel-gold flex items-center justify-center">
-                        <MessageCircle className="w-4 h-4 text-white" />
-                      </div>
-                    </Avatar>
-                  )}
-                  
-                  <div className={`${message.isBot 
-                    ? 'bg-hotel-gold text-white' 
-                    : 'bg-gray-100 text-hotel-charcoal'} 
-                    px-4 py-2 rounded-2xl shadow-sm`}
-                  >
-                    <p>{message.text}</p>
-                    <div className={`text-xs opacity-70 mt-1 ${message.isBot ? 'text-white/80' : 'text-gray-500'} ${direction === 'rtl' ? 'text-left' : 'text-right'}`}>
-                      {formatTime(message.timestamp)}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            {messages.length === 1 && (
-              <div className="mt-6 animate-fade-in">
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => handleQuickQuestion('breakfastTimeQuestion')}
-                    className="flex items-center gap-2 text-start p-2 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="w-6 h-6 rounded-full bg-hotel-gold/10 flex items-center justify-center">
-                      <Clock className="w-3 h-3 text-hotel-gold" />
-                    </div>
-                    <span className="text-hotel-charcoal text-sm">
-                      {getTranslation('breakfastTimeQuestion', language)}
-                    </span>
-                  </button>
-                  
-                  <button
-                    onClick={() => handleQuickQuestion('wifiQuestion')}
-                    className="flex items-center gap-2 text-start p-2 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="w-6 h-6 rounded-full bg-hotel-gold/10 flex items-center justify-center">
-                      <Wifi className="w-3 h-3 text-hotel-gold" />
-                    </div>
-                    <span className="text-hotel-charcoal text-sm">
-                      {getTranslation('wifiQuestion', language)}
-                    </span>
-                  </button>
-                  
-                  <button
-                    onClick={() => handleQuickQuestion('taxiQuestion')}
-                    className="flex items-center gap-2 text-start p-2 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="w-6 h-6 rounded-full bg-hotel-gold/10 flex items-center justify-center">
-                      <Car className="w-3 h-3 text-hotel-gold" />
-                    </div>
-                    <span className="text-hotel-charcoal text-sm">
-                      {getTranslation('taxiQuestion', language)}
-                    </span>
-                  </button>
-                  
-                  <button
-                    onClick={() => handleQuickQuestion('checkoutTimeQuestion')}
-                    className="flex items-center gap-2 text-start p-2 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="w-6 h-6 rounded-full bg-hotel-gold/10 flex items-center justify-center">
-                      <Clock className="w-3 h-3 text-hotel-gold" />
-                    </div>
-                    <span className="text-hotel-charcoal text-sm">
-                      {getTranslation('checkoutTimeQuestion', language)}
-                    </span>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </ScrollArea>
+        <MessageList 
+          messages={messages}
+          scrollAreaRef={scrollAreaRef}
+          onQuickQuestionClick={handleQuickQuestion}
+        />
         
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-hotel-light">
-          <div className="max-w-3xl mx-auto flex gap-2">
-            <Input
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={getTranslation('typeMessage', language)}
-              className="bg-white shadow-sm h-12 text-base"
-            />
-            <Button 
-              onClick={handleSendMessage} 
-              variant="hotel"
-              size="lg"
-              className="aspect-square p-0"
-            >
-              <Send className="w-5 h-5" />
-            </Button>
-          </div>
-        </div>
+        <ChatInput
+          value={input}
+          onChange={setInput}
+          onSend={handleSendMessage}
+        />
       </div>
     </div>
   );
