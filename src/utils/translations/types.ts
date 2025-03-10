@@ -12,6 +12,7 @@ export type TranslationKey =
   | 'success'
   | 'error'
   | 'loading'
+  | 'backToMenu'
   
   // Menu items
   | 'wifi'
@@ -21,6 +22,7 @@ export type TranslationKey =
   | 'cleaning'
   | 'frontDesk'
   | 'chat'
+  | 'desk'
   
   // WiFi
   | 'wifiUsername'
@@ -36,6 +38,9 @@ export type TranslationKey =
   | 'amenitiesList'
   | 'attractionsList'
   | 'contactInfo'
+  | 'aboutHotel'
+  | 'entertainment'
+  | 'attractions'
   
   // Booking
   | 'checkIn'
@@ -48,6 +53,13 @@ export type TranslationKey =
   | 'standardRoom'
   | 'deluxeRoom'
   | 'suiteRoom'
+  | 'bookTable'
+  | 'tennis'
+  | 'basketball'
+  | 'coffee'
+  | 'breakfast'
+  | 'lunch'
+  | 'dinner'
   
   // Taxi
   | 'destination'
@@ -61,6 +73,9 @@ export type TranslationKey =
   | 'fullCleaning'
   | 'quickCleaning'
   | 'towelsOnly'
+  | 'callCleaning'
+  | 'scheduleTime'
+  | 'dailyCleaning'
   
   // Front Desk
   | 'callFrontDesk'

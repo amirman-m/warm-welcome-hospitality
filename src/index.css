@@ -6,7 +6,7 @@
 @layer base {
   :root {
     --hotel-light: 44 45% 98%;
-    --hotel-gold: 36 100% 50%;
+    --hotel-gold: 200 78% 57%; /* Changed from 36 100% 50% to 200 78% 57% (for #3DA3E7) */
     --hotel-charcoal: 220 17% 20%;
   }
 

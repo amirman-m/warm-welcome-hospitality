@@ -57,7 +57,7 @@ export default {
 					light: '#F8F9FA',
 					cream: '#F3F1EE',
 					beige: '#E8E6E1',
-					gold: '#D4AF37',
+					gold: '#3DA3E7', // Changed from #D4AF37 to #3DA3E7
 					charcoal: '#36454F',
 					blue: '#6A8CAF'
 				}
