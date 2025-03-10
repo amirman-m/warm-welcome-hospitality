@@ -21,5 +21,10 @@ export const wifiTranslations: Record<string, Record<Language, string>> = {
     en: 'Loading WiFi details...',
     fa: 'در حال بارگذاری اطلاعات وای‌فای...',
     ar: 'جاري تحميل تفاصيل واي فاي...'
+  },
+  backToMenu: {
+    en: 'Back to Menu',
+    fa: 'بازگشت به منو',
+    ar: 'الرجوع إلى القائمة'
   }
 };

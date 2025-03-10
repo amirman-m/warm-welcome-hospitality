@@ -70,6 +70,15 @@ const WifiPage = () => {
     }
   }, [imageLoaded]);
 
+  // Add console log to verify navigation works
+  useEffect(() => {
+    console.log("WiFi page mounted - navigation should be working");
+    
+    return () => {
+      console.log("WiFi page unmounting");
+    };
+  }, []);
+
   return (
     <div 
       className={cn(
