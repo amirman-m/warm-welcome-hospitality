@@ -29,7 +29,9 @@ const ChatPage: React.FC = () => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Show chat after delay
     const timer = setTimeout(() => {
+      console.log("Setting showChat to true");
       setShowChat(true);
     }, 5000);
 
@@ -95,6 +97,8 @@ const ChatPage: React.FC = () => {
     const question = getTranslation(questionKey, language);
     setInput(question);
   };
+
+  console.log("Chat page state:", { showChat, messagesCount: messages.length });
 
   return (
     <DynamicBackground>

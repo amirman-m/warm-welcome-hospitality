@@ -35,14 +35,28 @@ const DynamicBackground: React.FC<{ children: React.ReactNode }> = ({ children }
     return () => clearInterval(interval);
   }, []);
 
+  // Ensure image is loaded immediately on initial render
+  useEffect(() => {
+    if (!loaded) {
+      const img = new Image();
+      img.src = backgrounds[timeOfDay];
+      img.onload = () => setLoaded(true);
+    }
+  }, [timeOfDay, loaded]);
+
+  console.log("Background state:", { timeOfDay, loaded, backgroundUrl: backgrounds[timeOfDay] });
+
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen w-full">
+      {/* Background image */}
       <div
         className={`fixed inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ${loaded ? 'opacity-100' : 'opacity-0'}`}
         style={{ backgroundImage: `url(${backgrounds[timeOfDay]})` }}
       />
+      {/* Overlay */}
       <div className="fixed inset-0 bg-black/50 backdrop-blur-[2px]" /> 
-      <div className="relative z-10">
+      {/* Content */}
+      <div className="relative z-10 min-h-screen">
         {children}
       </div>
     </div>
