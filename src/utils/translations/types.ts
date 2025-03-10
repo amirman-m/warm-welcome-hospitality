@@ -88,4 +88,13 @@ export type TranslationKey =
   | 'breakfastAnswer'
   | 'checkoutAnswer'
   | 'poolAnswer'
-  | 'generalAnswer';
+  | 'generalAnswer'
+  | 'hotelOnline'
+  | 'askAnyQuestion'
+  | 'howCanIHelp'
+  | 'defaultQuestions'
+  | 'tapToStart'
+  | 'breakfastTimeQuestion'
+  | 'wifiQuestion'
+  | 'taxiQuestion'
+  | 'checkoutTimeQuestion';

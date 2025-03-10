@@ -41,5 +41,51 @@ export const chatTranslations: Record<string, Record<Language, string>> = {
     en: 'Thank you for your question. Our front desk staff is ready to assist you with this. Would you like me to connect you with them?',
     fa: 'ممنون از سوال شما. کارکنان پذیرش ما آماده کمک به شما در این مورد هستند. آیا می‌خواهید شما را به آنها متصل کنم؟',
     ar: 'شكرًا على سؤالك. موظفو مكتب الاستقبال لدينا مستعدون لمساعدتك في هذا الأمر. هل تريد مني توصيلك بهم؟'
+  },
+  // New translations
+  hotelOnline: {
+    en: 'Hotel Online',
+    fa: 'خدمات میهمان‌نوازی هتل آنلاین',
+    ar: 'خدمات الضيافة الفندقية عبر الإنترنت'
+  },
+  askAnyQuestion: {
+    en: 'Ask any question that you have',
+    fa: 'هر سوالی دارید بپرسید',
+    ar: 'اسأل أي سؤال لديك'
+  },
+  howCanIHelp: {
+    en: 'How can I help you?',
+    fa: 'سلام! چطور می‌توانم به شما کمک کنم؟',
+    ar: 'كيف يمكنني مساعدتك؟'
+  },
+  defaultQuestions: {
+    en: 'Default Questions',
+    fa: 'سوالات متداول',
+    ar: 'الأسئلة الافتراضية'
+  },
+  tapToStart: {
+    en: 'Tap on a question to start:',
+    fa: 'روی یک سوال ضربه بزنید تا شروع کنید:',
+    ar: 'انقر على سؤال للبدء:'
+  },
+  breakfastTimeQuestion: {
+    en: 'What time is breakfast served?',
+    fa: 'ساعت صبحانه چیست؟',
+    ar: 'ما هو وقت الإفطار؟'
+  },
+  wifiQuestion: {
+    en: 'How do I connect to the WiFi?',
+    fa: 'چگونه به وای‌فای متصل شوم؟',
+    ar: 'كيف يمكنني الاتصال بشبكة Wi-Fi؟'
+  },
+  taxiQuestion: {
+    en: 'Can I book a taxi?',
+    fa: 'آیا می‌توانم تاکسی رزرو کنم؟',
+    ar: 'هل يمكنني حجز سيارة أجرة؟'
+  },
+  checkoutTimeQuestion: {
+    en: 'What are the check-out times?',
+    fa: 'زمان تسویه چه ساعتی است؟',
+    ar: 'ما هي أوقات المغادرة؟'
   }
 };
