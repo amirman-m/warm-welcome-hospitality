@@ -97,4 +97,6 @@ export type TranslationKey =
   | 'breakfastTimeQuestion'
   | 'wifiQuestion'
   | 'taxiQuestion'
-  | 'checkoutTimeQuestion';
+  | 'checkoutTimeQuestion'
+  | 'welcomeToHotel'  // Added missing key
+  | 'loadingChat';    // Added missing key
