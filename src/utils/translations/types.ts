@@ -28,6 +28,7 @@ export type TranslationKey =
   | 'wifiUsername'
   | 'wifiPassword'
   | 'wifiInstructions'
+  | 'loadingWifi'
   
   // Information
   | 'hotelInfo'
@@ -98,5 +99,5 @@ export type TranslationKey =
   | 'wifiQuestion'
   | 'taxiQuestion'
   | 'checkoutTimeQuestion'
-  | 'welcomeToHotel'  // Added missing key
-  | 'loadingChat';    // Added missing key
+  | 'welcomeToHotel'
+  | 'loadingChat';

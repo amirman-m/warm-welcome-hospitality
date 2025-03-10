@@ -16,5 +16,10 @@ export const wifiTranslations: Record<string, Record<Language, string>> = {
     en: 'How to connect to WiFi',
     fa: 'چگونه به وای‌فای متصل شوید',
     ar: 'كيفية الاتصال بشبكة واي فاي'
+  },
+  loadingWifi: {
+    en: 'Loading WiFi details...',
+    fa: 'در حال بارگذاری اطلاعات وای‌فای...',
+    ar: 'جاري تحميل تفاصيل واي فاي...'
   }
 };

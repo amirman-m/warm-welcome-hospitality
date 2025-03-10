@@ -34,21 +34,31 @@ const DynamicBackground: React.FC<{ children: React.ReactNode }> = ({ children }
     return () => clearInterval(interval);
   }, []);
 
-  // Load the background image
+  // Pre-load all background images
   useEffect(() => {
-    console.log(`Loading background image for ${timeOfDay}...`);
-    const img = new Image();
-    img.src = backgrounds[timeOfDay];
-    img.onload = () => {
-      console.log(`Background image for ${timeOfDay} loaded successfully`);
-      setLoaded(true);
+    const preloadAllImages = async () => {
+      try {
+        const preloadPromises = Object.values(backgrounds).map((url) => {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.src = url;
+            img.onload = resolve;
+            img.onerror = reject;
+          });
+        });
+        
+        await Promise.all(preloadPromises);
+        console.log('All background images preloaded successfully');
+        setLoaded(true);
+      } catch (error) {
+        console.error('Failed to preload all background images:', error);
+        // Fall back to loaded state even if some images fail
+        setLoaded(true);
+      }
     };
-    img.onerror = (err) => {
-      console.error(`Failed to load background image for ${timeOfDay}:`, err);
-      // Fallback to show content even if image fails to load
-      setLoaded(true);
-    };
-  }, [timeOfDay]);
+    
+    preloadAllImages();
+  }, []);
 
   console.log("Background state:", { timeOfDay, loaded, backgroundUrl: backgrounds[timeOfDay] });
 
