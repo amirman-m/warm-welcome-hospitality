@@ -23,7 +23,10 @@ const MessageList: React.FC<MessageListProps> = ({
   onQuickQuestionClick
 }) => {
   return (
-    <ScrollArea ref={scrollAreaRef} className="flex-1 bg-white rounded-xl shadow-sm p-4 mb-4">
+    <ScrollArea 
+      ref={scrollAreaRef} 
+      className="flex-1 glass-effect rounded-xl p-4 mb-4"
+    >
       <div className="space-y-4">
         {messages.map((message) => (
           <MessageBubble

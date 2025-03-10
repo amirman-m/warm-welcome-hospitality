@@ -1,10 +1,10 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { getTranslation } from '@/utils/translations';
 import BackButton from '@/components/BackButton';
 import MessageList from '@/components/chat/MessageList';
 import ChatInput from '@/components/chat/ChatInput';
+import DynamicBackground from '@/components/chat/DynamicBackground';
 
 interface Message {
   id: number;
@@ -87,32 +87,34 @@ const ChatPage: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen bg-hotel-light flex flex-col ${direction === 'rtl' ? 'font-vazirmatn' : 'font-inter'}`}>
-      <BackButton />
-      
-      <div className="flex-1 flex flex-col p-4 pb-20 max-w-3xl mx-auto w-full">
-        <div className="text-center mb-4 animate-fade-in bg-white rounded-xl p-4 shadow-sm">
-          <h1 className="text-xl font-semibold text-hotel-charcoal">
-            {getTranslation('hotelOnline', language)}
-          </h1>
-          <p className="text-neutral-500 text-sm mt-1">
-            {getTranslation('askAnyQuestion', language)}
-          </p>
+    <DynamicBackground>
+      <div className={`min-h-screen flex flex-col ${direction === 'rtl' ? 'font-vazirmatn' : 'font-inter'}`}>
+        <BackButton />
+        
+        <div className="flex-1 flex flex-col p-4 pb-20 max-w-3xl mx-auto w-full">
+          <div className="text-center mb-4 animate-fade-in glass-effect rounded-xl p-4">
+            <h1 className="text-xl font-semibold text-white">
+              {getTranslation('hotelOnline', language)}
+            </h1>
+            <p className="text-white/80 text-sm mt-1">
+              {getTranslation('askAnyQuestion', language)}
+            </p>
+          </div>
+          
+          <MessageList 
+            messages={messages}
+            scrollAreaRef={scrollAreaRef}
+            onQuickQuestionClick={handleQuickQuestion}
+          />
+          
+          <ChatInput
+            value={input}
+            onChange={setInput}
+            onSend={handleSendMessage}
+          />
         </div>
-        
-        <MessageList 
-          messages={messages}
-          scrollAreaRef={scrollAreaRef}
-          onQuickQuestionClick={handleQuickQuestion}
-        />
-        
-        <ChatInput
-          value={input}
-          onChange={setInput}
-          onSend={handleSendMessage}
-        />
       </div>
-    </div>
+    </DynamicBackground>
   );
 };
 
