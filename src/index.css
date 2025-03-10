@@ -14,6 +14,13 @@
     margin: 0;
     padding: 0;
   }
+  
+  /* Adding font optimization */
+  body {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
 
 #root {
@@ -60,7 +67,11 @@
 
 /* Chat specific styles */
 .glass-effect {
-  @apply bg-white/10 backdrop-blur-lg border border-white/20;
+  @apply bg-white/15 backdrop-blur-md border border-white/30 shadow-xl;
+}
+
+.message-text {
+  @apply leading-relaxed tracking-wide;
 }
 
 .animate-fade-in {
@@ -165,4 +176,9 @@
     transform: scale(4);
     opacity: 0;
   }
+}
+
+/* Input box enhancement */
+.chat-input-container {
+  @apply bg-black/20 backdrop-blur-md border-t border-white/10 py-4;
 }

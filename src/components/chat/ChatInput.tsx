@@ -23,21 +23,21 @@ const ChatInput: React.FC<ChatInputProps> = ({ value, onChange, onSend }) => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 p-4 bg-hotel-light">
-      <div className="max-w-3xl mx-auto flex gap-2">
+    <div className="fixed bottom-0 left-0 right-0 chat-input-container">
+      <div className="max-w-3xl mx-auto flex gap-2 px-4">
         <Input
           ref={inputRef}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={getTranslation('typeMessage', language)}
-          className="bg-white shadow-sm h-12 text-base"
+          className="bg-white/90 shadow-lg h-12 text-base font-medium border-white/30 text-hotel-charcoal"
         />
         <Button 
           onClick={onSend} 
           variant="hotel"
           size="lg"
-          className="aspect-square p-0"
+          className="aspect-square p-0 shadow-lg"
         >
           <Send className="w-5 h-5" />
         </Button>

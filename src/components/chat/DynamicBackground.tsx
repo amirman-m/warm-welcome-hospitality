@@ -34,7 +34,7 @@ const DynamicBackground: React.FC<{ children: React.ReactNode }> = ({ children }
         className="fixed inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000"
         style={{ backgroundImage: `url(${backgrounds[timeOfDay]})` }}
       />
-      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" /> {/* Semi-transparent overlay */}
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-[2px]" /> {/* Enhanced overlay for better readability */}
       <div className="relative z-10">
         {children}
       </div>

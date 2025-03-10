@@ -25,7 +25,7 @@ const MessageList: React.FC<MessageListProps> = ({
   return (
     <ScrollArea 
       ref={scrollAreaRef} 
-      className="flex-1 glass-effect rounded-xl p-4 mb-4"
+      className="flex-1 glass-effect rounded-xl p-4 mb-4 shadow-lg"
     >
       <div className="space-y-4">
         {messages.map((message) => (
