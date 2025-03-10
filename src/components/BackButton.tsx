@@ -17,6 +17,8 @@ const BackButton: React.FC = () => {
     <button 
       onClick={goBack}
       className="flex items-center glass-effect px-4 py-2 rounded-full shadow-sm hover:shadow-md transition-all duration-300 absolute top-6 left-6 z-10"
+      aria-label="Back to menu"
+      type="button"
     >
       {direction === 'ltr' ? (
         <ChevronLeft className="w-4 h-4 mr-1" />
