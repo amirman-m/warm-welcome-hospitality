@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Workflow, PhoneCall, CalendarClock, RefreshCw } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { getTranslation } from '@/utils/translations';
@@ -7,16 +6,26 @@ import LanguageToggle from '@/components/LanguageToggle';
 import BackButton from '@/components/BackButton';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import DynamicBackground from '@/components/DynamicBackground';
 
 const CleaningPage = () => {
   const { language, direction } = useLanguage();
   const [dailyCleaning, setDailyCleaning] = useState(true);
   const [selectedTime, setSelectedTime] = useState('');
+  const [showContent, setShowContent] = useState(false);
   
   const timeSlots = [
     '09:00', '10:00', '11:00', '12:00', '13:00', 
     '14:00', '15:00', '16:00', '17:00', '18:00'
   ];
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowContent(true);
+    }, 3000);
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   const handleCallCleaning = () => {
     toast({
@@ -67,118 +76,137 @@ const CleaningPage = () => {
   };
   
   return (
-    <div className={`min-h-screen p-6 pt-20 bg-hotel-light ${direction === 'rtl' ? 'font-vazirmatn' : 'font-inter'}`}>
-      <LanguageToggle />
-      <BackButton />
-      
-      <div className="max-w-lg mx-auto animate-slide-up">
-        {/* Header */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-16 h-16 rounded-full bg-hotel-gold flex items-center justify-center mb-3">
-            <Workflow className="text-white w-8 h-8" />
+    <DynamicBackground>
+      <div className={`min-h-screen ${direction === 'rtl' ? 'font-vazirmatn' : 'font-inter'}`}>
+        <div className="fixed top-0 left-0 right-0 z-50 p-6 flex justify-between pointer-events-none">
+          <div className="pointer-events-auto">
+            <BackButton />
           </div>
-          <h1 className="text-2xl font-medium text-hotel-charcoal">
-            {getTranslation('cleaning', language)}
-          </h1>
+          <div className="pointer-events-auto">
+            <LanguageToggle />
+          </div>
         </div>
         
-        {/* Cleaning options */}
-        <div className="space-y-4">
-          {/* Call cleaning crew */}
-          <div 
-            className="glass-effect rounded-xl p-6 flex justify-between items-center hover:shadow-md transition-all cursor-pointer active:scale-98"
-            onClick={handleCallCleaning}
-          >
-            <div className="flex items-center">
-              <div className="w-10 h-10 rounded-full bg-hotel-blue bg-opacity-10 flex items-center justify-center mr-4">
-                <PhoneCall className="text-hotel-blue w-5 h-5" />
+        {!showContent ? (
+          <div className="flex-1 flex items-center justify-center min-h-screen">
+            <div className="text-center animate-pulse p-6 glass-effect rounded-2xl max-w-sm mx-auto">
+              <div className="w-16 h-16 rounded-full bg-hotel-gold mx-auto flex items-center justify-center mb-4">
+                <Workflow className="text-white w-8 h-8" />
               </div>
-              <div className="text-start">
-                <h3 className="font-medium">{getTranslation('callCleaning', language)}</h3>
-                <p className="text-xs text-hotel-charcoal text-opacity-70">
-                  {language === 'en' ? 'Request immediate room cleaning' : 
-                   language === 'fa' ? 'درخواست نظافت فوری اتاق' : 
-                   'طلب تنظيف فوري للغرفة'}
-                </p>
-              </div>
-            </div>
-            <div className="bg-hotel-gold text-white w-8 h-8 rounded-full flex items-center justify-center">
-              <PhoneCall className="w-4 h-4" />
-            </div>
-          </div>
-          
-          {/* Schedule cleaning */}
-          <div className="glass-effect rounded-xl p-6 text-start">
-            <div className="flex items-center mb-4">
-              <div className="w-10 h-10 rounded-full bg-hotel-blue bg-opacity-10 flex items-center justify-center mr-4">
-                <CalendarClock className="text-hotel-blue w-5 h-5" />
-              </div>
-              <h3 className="font-medium">{getTranslation('scheduleTime', language)}</h3>
-            </div>
-            
-            <div className="mb-4">
-              <p className="text-xs text-hotel-charcoal text-opacity-70 mb-3">
-                {language === 'en' ? 'Select preferred cleaning time' : 
-                 language === 'fa' ? 'زمان ترجیحی نظافت را انتخاب کنید' : 
-                 'حدد وقت التنظيف المفضل'}
+              <h1 className="text-2xl font-bold text-white mb-2">
+                {getTranslation('cleaning', language)}
+              </h1>
+              <p className="text-white/80">
+                {getTranslation('loadingCleaning', language) || 'Loading cleaning services...'}
               </p>
-              <div className="grid grid-cols-5 gap-2">
-                {timeSlots.map((time) => (
-                  <button
-                    key={time}
-                    className={cn(
-                      "py-2 rounded-md text-sm transition-all",
-                      selectedTime === time 
-                        ? "bg-hotel-gold text-white" 
-                        : "bg-white hover:bg-hotel-blue hover:text-white"
-                    )}
-                    onClick={() => setSelectedTime(time)}
-                  >
-                    {time}
-                  </button>
-                ))}
+            </div>
+          </div>
+        ) : (
+          <div className="pt-24 px-6 pb-6 animate-slide-up max-w-lg mx-auto">
+            <div className="flex flex-col items-center mb-8">
+              <div className="w-16 h-16 rounded-full bg-hotel-gold flex items-center justify-center mb-3">
+                <Workflow className="text-white w-8 h-8" />
               </div>
+              <h1 className="text-2xl font-medium text-white">
+                {getTranslation('cleaning', language)}
+              </h1>
             </div>
             
-            <button
-              className="w-full bg-hotel-gold text-white py-2 rounded-lg font-medium hover:bg-opacity-90 transition-all active:scale-95"
-              onClick={handleScheduleCleaning}
-            >
-              {language === 'en' ? 'Schedule' : language === 'fa' ? 'زمان‌بندی' : 'جدولة'}
-            </button>
-          </div>
-          
-          {/* Daily cleaning toggle */}
-          <div className="glass-effect rounded-xl p-6 flex justify-between items-center">
-            <div className="flex items-center">
-              <div className="w-10 h-10 rounded-full bg-hotel-blue bg-opacity-10 flex items-center justify-center mr-4">
-                <RefreshCw className="text-hotel-blue w-5 h-5" />
+            <div className="space-y-4">
+              <div 
+                className="glass-effect rounded-xl p-6 flex justify-between items-center hover:shadow-md transition-all cursor-pointer active:scale-98"
+                onClick={handleCallCleaning}
+              >
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-full bg-hotel-blue bg-opacity-10 flex items-center justify-center mr-4">
+                    <PhoneCall className="text-hotel-blue w-5 h-5" />
+                  </div>
+                  <div className="text-start">
+                    <h3 className="font-medium">{getTranslation('callCleaning', language)}</h3>
+                    <p className="text-xs text-hotel-charcoal text-opacity-70">
+                      {language === 'en' ? 'Request immediate room cleaning' : 
+                       language === 'fa' ? 'درخواست نظافت فوری اتاق' : 
+                       'طلب تنظيف فوري للغرفة'}
+                    </p>
+                  </div>
+                </div>
+                <div className="bg-hotel-gold text-white w-8 h-8 rounded-full flex items-center justify-center">
+                  <PhoneCall className="w-4 h-4" />
+                </div>
               </div>
-              <div className="text-start">
-                <h3 className="font-medium">{getTranslation('dailyCleaning', language)}</h3>
-                <p className="text-xs text-hotel-charcoal text-opacity-70">
-                  {language === 'en' ? 'Automatic daily room cleaning' : 
-                   language === 'fa' ? 'نظافت روزانه خودکار اتاق' : 
-                   'تنظيف يومي تلقائي للغرفة'}
-                </p>
+              
+              <div className="glass-effect rounded-xl p-6 text-start">
+                <div className="flex items-center mb-4">
+                  <div className="w-10 h-10 rounded-full bg-hotel-blue bg-opacity-10 flex items-center justify-center mr-4">
+                    <CalendarClock className="text-hotel-blue w-5 h-5" />
+                  </div>
+                  <h3 className="font-medium">{getTranslation('scheduleTime', language)}</h3>
+                </div>
+                
+                <div className="mb-4">
+                  <p className="text-xs text-hotel-charcoal text-opacity-70 mb-3">
+                    {language === 'en' ? 'Select preferred cleaning time' : 
+                     language === 'fa' ? 'زمان ترجیحی نظافت را انتخاب کنید' : 
+                     'حدد وقت التنظيف المفضل'}
+                  </p>
+                  <div className="grid grid-cols-5 gap-2">
+                    {timeSlots.map((time) => (
+                      <button
+                        key={time}
+                        className={cn(
+                          "py-2 rounded-md text-sm transition-all",
+                          selectedTime === time 
+                            ? "bg-hotel-gold text-white" 
+                            : "bg-white hover:bg-hotel-blue hover:text-white"
+                        )}
+                        onClick={() => setSelectedTime(time)}
+                      >
+                        {time}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <button
+                  className="w-full bg-hotel-gold text-white py-2 rounded-lg font-medium hover:bg-opacity-90 transition-all active:scale-95"
+                  onClick={handleScheduleCleaning}
+                >
+                  {language === 'en' ? 'Schedule' : language === 'fa' ? 'زمان‌بندی' : 'جدولة'}
+                </button>
+              </div>
+              
+              <div className="glass-effect rounded-xl p-6 flex justify-between items-center">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-full bg-hotel-blue bg-opacity-10 flex items-center justify-center mr-4">
+                    <RefreshCw className="text-hotel-blue w-5 h-5" />
+                  </div>
+                  <div className="text-start">
+                    <h3 className="font-medium">{getTranslation('dailyCleaning', language)}</h3>
+                    <p className="text-xs text-hotel-charcoal text-opacity-70">
+                      {language === 'en' ? 'Automatic daily room cleaning' : 
+                       language === 'fa' ? 'نظافت روزانه خودکار اتاق' : 
+                       'تنظيف يومي تلقائي للغرفة'}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  className={`w-12 h-6 rounded-full relative transition-all ${
+                    dailyCleaning ? 'bg-hotel-gold' : 'bg-gray-300'
+                  }`}
+                  onClick={toggleDailyCleaning}
+                >
+                  <span 
+                    className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-all ${
+                      dailyCleaning ? (direction === 'rtl' ? 'left-1' : 'right-1') : (direction === 'rtl' ? 'right-1' : 'left-1')
+                    }`}
+                  />
+                </button>
               </div>
             </div>
-            <button
-              className={`w-12 h-6 rounded-full relative transition-all ${
-                dailyCleaning ? 'bg-hotel-gold' : 'bg-gray-300'
-              }`}
-              onClick={toggleDailyCleaning}
-            >
-              <span 
-                className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-all ${
-                  dailyCleaning ? (direction === 'rtl' ? 'left-1' : 'right-1') : (direction === 'rtl' ? 'right-1' : 'left-1')
-                }`}
-              />
-            </button>
           </div>
-        </div>
+        )}
       </div>
-    </div>
+    </DynamicBackground>
   );
 };
 
