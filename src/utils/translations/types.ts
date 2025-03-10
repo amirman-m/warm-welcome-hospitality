@@ -42,6 +42,7 @@ export type TranslationKey =
   | 'aboutHotel'
   | 'entertainment'
   | 'attractions'
+  | 'loadingInformation'  // Added this key
   
   // Booking
   | 'checkIn'
@@ -61,11 +62,18 @@ export type TranslationKey =
   | 'breakfast'
   | 'lunch'
   | 'dinner'
+  | 'loadingBooking'   // Added this key
+  | 'selectMeal'       // Added this key
+  | 'selectTime'       // Added this key
+  | 'selectTable'      // Added this key
+  | 'booked'           // Added this key
+  | 'book'             // Added this key
   
   // Taxi
   | 'destination'
   | 'pickupTime'
   | 'requestTaxi'
+  | 'loadingTaxi'      // Added this key
   
   // Cleaning
   | 'cleaningType'
@@ -77,10 +85,12 @@ export type TranslationKey =
   | 'callCleaning'
   | 'scheduleTime'
   | 'dailyCleaning'
+  | 'loadingCleaning'  // Added this key
   
   // Front Desk
   | 'callFrontDesk'
   | 'askQuestion'
+  | 'loadingDesk'      // Added this key
   
   // Chat
   | 'chatWelcomeMessage'
