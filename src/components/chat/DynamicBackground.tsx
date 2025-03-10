@@ -13,6 +13,11 @@ const DynamicBackground: React.FC<{ children: React.ReactNode }> = ({ children }
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    // Pre-load image first to avoid blank background
+    const img = new Image();
+    img.src = backgrounds[timeOfDay];
+    img.onload = () => setLoaded(true);
+    
     const updateTimeOfDay = () => {
       const hour = new Date().getHours();
       if (hour >= 5 && hour < 12) {
@@ -24,38 +29,42 @@ const DynamicBackground: React.FC<{ children: React.ReactNode }> = ({ children }
       }
     };
 
+    // Set initial time of day
     updateTimeOfDay();
-    const interval = setInterval(updateTimeOfDay, 60000); // Check every minute
     
-    // Preload background image
-    const img = new Image();
-    img.src = backgrounds[timeOfDay];
-    img.onload = () => setLoaded(true);
+    // Update time of day every minute
+    const interval = setInterval(updateTimeOfDay, 60000);
     
     return () => clearInterval(interval);
   }, []);
 
-  // Ensure image is loaded immediately on initial render
+  // Update background when time of day changes
   useEffect(() => {
-    if (!loaded) {
+    if (timeOfDay) {
       const img = new Image();
       img.src = backgrounds[timeOfDay];
       img.onload = () => setLoaded(true);
     }
-  }, [timeOfDay, loaded]);
+  }, [timeOfDay]);
 
   console.log("Background state:", { timeOfDay, loaded, backgroundUrl: backgrounds[timeOfDay] });
 
+  if (!loaded) {
+    return <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="animate-pulse text-white">Loading...</div>
+    </div>;
+  }
+
   return (
-    <div className="relative min-h-screen w-full">
-      {/* Background image */}
+    <div className="relative min-h-screen w-full overflow-hidden">
+      {/* Background image with higher z-index */}
       <div
-        className={`fixed inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000"
         style={{ backgroundImage: `url(${backgrounds[timeOfDay]})` }}
       />
       {/* Overlay */}
       <div className="fixed inset-0 bg-black/50 backdrop-blur-[2px]" /> 
-      {/* Content */}
+      {/* Content with highest z-index */}
       <div className="relative z-10 min-h-screen">
         {children}
       </div>

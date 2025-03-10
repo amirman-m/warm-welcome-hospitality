@@ -28,14 +28,24 @@ const ChatPage: React.FC = () => {
   const [showChat, setShowChat] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
+  // Force render to ensure component is properly mounted
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     // Show chat after delay
+    console.log("Starting timer to show chat");
     const timer = setTimeout(() => {
-      console.log("Setting showChat to true");
+      console.log("Timer complete - Setting showChat to true");
       setShowChat(true);
     }, 5000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      console.log("Clearing timer");
+      clearTimeout(timer);
+    };
   }, []);
 
   useEffect(() => {
@@ -98,7 +108,7 @@ const ChatPage: React.FC = () => {
     setInput(question);
   };
 
-  console.log("Chat page state:", { showChat, messagesCount: messages.length });
+  console.log("Chat page state:", { mounted, showChat, messagesCount: messages.length });
 
   return (
     <DynamicBackground>
