@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, Send, Clock, Wifi, Car } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
@@ -31,7 +30,6 @@ const ChatPage: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Scroll to bottom when messages change
     if (scrollAreaRef.current) {
       const scrollElement = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
       if (scrollElement) {
@@ -43,7 +41,6 @@ const ChatPage: React.FC = () => {
   const handleSendMessage = () => {
     if (!input.trim()) return;
     
-    // Add user message
     const userMessage: Message = {
       id: messages.length + 1,
       text: input,
@@ -54,7 +51,6 @@ const ChatPage: React.FC = () => {
     setMessages([...messages, userMessage]);
     setInput('');
     
-    // Simulate bot response
     setTimeout(() => {
       let botResponse = '';
       
@@ -105,7 +101,6 @@ const ChatPage: React.FC = () => {
     const question = getTranslation(questionKey, language);
     setInput(question);
     
-    // Focus on input after setting the question
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -155,58 +150,53 @@ const ChatPage: React.FC = () => {
               </div>
             ))}
 
-            {/* Default questions section - only show if there's just the initial message */}
             {messages.length === 1 && (
-              <div className="mt-8 animate-fade-in">
-                <p className="text-center text-neutral-500 mb-4">
-                  {getTranslation('tapToStart', language)}
-                </p>
-                
-                <div className="grid grid-cols-1 gap-3">
+              <div className="mt-6 animate-fade-in">
+                <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={() => handleQuickQuestion('breakfastTimeQuestion')}
-                    className="flex items-center gap-2 text-start p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-2 text-start p-2 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
                   >
-                    <div className="w-8 h-8 rounded-full bg-hotel-gold/10 flex items-center justify-center">
-                      <Clock className="w-4 h-4 text-hotel-gold" />
+                    <div className="w-6 h-6 rounded-full bg-hotel-gold/10 flex items-center justify-center">
+                      <Clock className="w-3 h-3 text-hotel-gold" />
                     </div>
-                    <span className="text-hotel-charcoal">
+                    <span className="text-hotel-charcoal text-sm">
                       {getTranslation('breakfastTimeQuestion', language)}
                     </span>
                   </button>
                   
                   <button
                     onClick={() => handleQuickQuestion('wifiQuestion')}
-                    className="flex items-center gap-2 text-start p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-2 text-start p-2 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
                   >
-                    <div className="w-8 h-8 rounded-full bg-hotel-gold/10 flex items-center justify-center">
-                      <Wifi className="w-4 h-4 text-hotel-gold" />
+                    <div className="w-6 h-6 rounded-full bg-hotel-gold/10 flex items-center justify-center">
+                      <Wifi className="w-3 h-3 text-hotel-gold" />
                     </div>
-                    <span className="text-hotel-charcoal">
+                    <span className="text-hotel-charcoal text-sm">
                       {getTranslation('wifiQuestion', language)}
                     </span>
                   </button>
                   
                   <button
                     onClick={() => handleQuickQuestion('taxiQuestion')}
-                    className="flex items-center gap-2 text-start p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-2 text-start p-2 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
                   >
-                    <div className="w-8 h-8 rounded-full bg-hotel-gold/10 flex items-center justify-center">
-                      <Car className="w-4 h-4 text-hotel-gold" />
+                    <div className="w-6 h-6 rounded-full bg-hotel-gold/10 flex items-center justify-center">
+                      <Car className="w-3 h-3 text-hotel-gold" />
                     </div>
-                    <span className="text-hotel-charcoal">
+                    <span className="text-hotel-charcoal text-sm">
                       {getTranslation('taxiQuestion', language)}
                     </span>
                   </button>
                   
                   <button
                     onClick={() => handleQuickQuestion('checkoutTimeQuestion')}
-                    className="flex items-center gap-2 text-start p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-2 text-start p-2 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
                   >
-                    <div className="w-8 h-8 rounded-full bg-hotel-gold/10 flex items-center justify-center">
-                      <Clock className="w-4 h-4 text-hotel-gold" />
+                    <div className="w-6 h-6 rounded-full bg-hotel-gold/10 flex items-center justify-center">
+                      <Clock className="w-3 h-3 text-hotel-gold" />
                     </div>
-                    <span className="text-hotel-charcoal">
+                    <span className="text-hotel-charcoal text-sm">
                       {getTranslation('checkoutTimeQuestion', language)}
                     </span>
                   </button>
