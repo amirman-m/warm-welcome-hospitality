@@ -30,95 +30,110 @@ const InformationPage = () => {
   };
   
   return (
-    <div className={`min-h-screen p-6 pt-20 bg-hotel-light ${direction === 'rtl' ? 'font-vazirmatn' : 'font-inter'}`}>
-      <LanguageToggle />
-      <BackButton />
+    <div className={`min-h-screen relative ${direction === 'rtl' ? 'font-vazirmatn' : 'font-inter'}`}>
+      {/* Background Image */}
+      <div 
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ 
+          backgroundImage: "url('https://images.unsplash.com/photo-1483058712412-4245e9b90334')",
+          filter: "brightness(0.7) blur(2px)",
+        }}
+      />
       
-      <div className="max-w-lg mx-auto animate-slide-up">
-        {/* Header */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-16 h-16 rounded-full bg-hotel-gold flex items-center justify-center mb-3">
-            <Info className="text-white w-8 h-8" />
+      {/* Overlay for better readability */}
+      <div className="fixed inset-0 bg-black/30 backdrop-blur-[1px]" />
+      
+      {/* Content Container - Using relative positioning to appear above the background */}
+      <div className="relative z-10 min-h-screen p-6 pt-20">
+        <LanguageToggle />
+        <BackButton />
+        
+        <div className="max-w-lg mx-auto animate-slide-up">
+          {/* Header */}
+          <div className="flex flex-col items-center mb-8">
+            <div className="w-16 h-16 rounded-full bg-hotel-gold flex items-center justify-center mb-3 shadow-lg">
+              <Info className="text-white w-8 h-8" />
+            </div>
+            <h1 className="text-2xl font-medium text-white drop-shadow-md">
+              {getTranslation('information', language)}
+            </h1>
           </div>
-          <h1 className="text-2xl font-medium text-hotel-charcoal">
-            {getTranslation('information', language)}
-          </h1>
-        </div>
-        
-        {/* Tabs */}
-        <div className="glass-effect rounded-full p-1 mb-6 flex">
-          <button 
-            className={cn(
-              "flex-1 py-2 rounded-full text-sm transition-all duration-300 flex items-center justify-center gap-2",
-              activeTab === 'about' 
-                ? "bg-hotel-gold text-white" 
-                : "hover:bg-hotel-cream"
-            )}
-            onClick={() => setActiveTab('about')}
-          >
-            <Building className="w-4 h-4" />
-            <span>{getTranslation('aboutHotel', language)}</span>
-          </button>
-          <button 
-            className={cn(
-              "flex-1 py-2 rounded-full text-sm transition-all duration-300 flex items-center justify-center gap-2",
-              activeTab === 'entertainment' 
-                ? "bg-hotel-gold text-white" 
-                : "hover:bg-hotel-cream"
-            )}
-            onClick={() => setActiveTab('entertainment')}
-          >
-            <Music className="w-4 h-4" />
-            <span>{getTranslation('entertainment', language)}</span>
-          </button>
-          <button 
-            className={cn(
-              "flex-1 py-2 rounded-full text-sm transition-all duration-300 flex items-center justify-center gap-2",
-              activeTab === 'attractions' 
-                ? "bg-hotel-gold text-white" 
-                : "hover:bg-hotel-cream"
-            )}
-            onClick={() => setActiveTab('attractions')}
-          >
-            <MapPin className="w-4 h-4" />
-            <span>{getTranslation('attractions', language)}</span>
-          </button>
-        </div>
-        
-        {/* Content */}
-        <div className="glass-effect rounded-xl p-6 text-start">
-          {activeTab === 'about' && (
-            <div className="animate-fade-in">
-              <h2 className="text-lg font-medium mb-4">
-                {getTranslation('aboutHotel', language)}
-              </h2>
-              <p className="text-hotel-charcoal">
-                {information.about[language]}
-              </p>
-            </div>
-          )}
           
-          {activeTab === 'entertainment' && (
-            <div className="animate-fade-in">
-              <h2 className="text-lg font-medium mb-4">
-                {getTranslation('entertainment', language)}
-              </h2>
-              <p className="text-hotel-charcoal">
-                {information.entertainment[language]}
-              </p>
-            </div>
-          )}
+          {/* Tabs - Enhanced with shadow for depth */}
+          <div className="glass-effect rounded-full p-1 mb-6 flex shadow-xl">
+            <button 
+              className={cn(
+                "flex-1 py-2 rounded-full text-sm transition-all duration-300 flex items-center justify-center gap-2",
+                activeTab === 'about' 
+                  ? "bg-hotel-gold text-white shadow-md" 
+                  : "hover:bg-hotel-cream/70 text-white"
+              )}
+              onClick={() => setActiveTab('about')}
+            >
+              <Building className="w-4 h-4" />
+              <span>{getTranslation('aboutHotel', language)}</span>
+            </button>
+            <button 
+              className={cn(
+                "flex-1 py-2 rounded-full text-sm transition-all duration-300 flex items-center justify-center gap-2",
+                activeTab === 'entertainment' 
+                  ? "bg-hotel-gold text-white shadow-md" 
+                  : "hover:bg-hotel-cream/70 text-white"
+              )}
+              onClick={() => setActiveTab('entertainment')}
+            >
+              <Music className="w-4 h-4" />
+              <span>{getTranslation('entertainment', language)}</span>
+            </button>
+            <button 
+              className={cn(
+                "flex-1 py-2 rounded-full text-sm transition-all duration-300 flex items-center justify-center gap-2",
+                activeTab === 'attractions' 
+                  ? "bg-hotel-gold text-white shadow-md" 
+                  : "hover:bg-hotel-cream/70 text-white"
+              )}
+              onClick={() => setActiveTab('attractions')}
+            >
+              <MapPin className="w-4 h-4" />
+              <span>{getTranslation('attractions', language)}</span>
+            </button>
+          </div>
           
-          {activeTab === 'attractions' && (
-            <div className="animate-fade-in">
-              <h2 className="text-lg font-medium mb-4">
-                {getTranslation('attractions', language)}
-              </h2>
-              <p className="text-hotel-charcoal">
-                {information.attractions[language]}
-              </p>
-            </div>
-          )}
+          {/* Content - Enhanced glass effect with deeper shadow */}
+          <div className="bg-white/85 backdrop-blur-md rounded-xl p-6 text-start shadow-2xl border border-white/40">
+            {activeTab === 'about' && (
+              <div className="animate-fade-in">
+                <h2 className="text-lg font-medium mb-4 text-hotel-charcoal">
+                  {getTranslation('aboutHotel', language)}
+                </h2>
+                <p className="text-hotel-charcoal">
+                  {information.about[language]}
+                </p>
+              </div>
+            )}
+            
+            {activeTab === 'entertainment' && (
+              <div className="animate-fade-in">
+                <h2 className="text-lg font-medium mb-4 text-hotel-charcoal">
+                  {getTranslation('entertainment', language)}
+                </h2>
+                <p className="text-hotel-charcoal">
+                  {information.entertainment[language]}
+                </p>
+              </div>
+            )}
+            
+            {activeTab === 'attractions' && (
+              <div className="animate-fade-in">
+                <h2 className="text-lg font-medium mb-4 text-hotel-charcoal">
+                  {getTranslation('attractions', language)}
+                </h2>
+                <p className="text-hotel-charcoal">
+                  {information.attractions[language]}
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
