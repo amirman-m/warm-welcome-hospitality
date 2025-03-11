@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Car, Clock, CheckCircle } from 'lucide-react';
+import { Car, MapPin, Clock, Users, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { getTranslation } from '@/utils/translations';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -8,36 +8,65 @@ import BackButton from '@/components/BackButton';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
 import LocationSearchInput from '@/components/LocationSearchInput';
 import SelectedLocationDisplay from '@/components/SelectedLocationDisplay';
 import RouteMapDialog from '@/components/RouteMapDialog';
 import { loadGoogleMapsApi } from '@/utils/maps';
 
 // Replace with your Google Maps API key
-const GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE'; 
+const GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE';
+
+type PickupTimeOption = 'now' | '15min' | '30min' | '1hour' | 'custom';
 
 const TaxiPage = () => {
   const { language, direction } = useLanguage();
   const [destination, setDestination] = useState('');
   const [selectedDestination, setSelectedDestination] = useState('');
   const [selectedPlaceId, setSelectedPlaceId] = useState('');
-  const [pickupTime, setPickupTime] = useState('');
+  const [pickupTimeOption, setPickupTimeOption] = useState<PickupTimeOption>('now');
+  const [customDate, setCustomDate] = useState<Date | undefined>(new Date());
+  const [customTime, setCustomTime] = useState<string>('');
+  const [showTimeSelect, setShowTimeSelect] = useState(false);
+  const [passengerCount, setPassengerCount] = useState(1);
+  const [showCalendar, setShowCalendar] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiLoaded, setApiLoaded] = useState(false);
   const [showRouteMap, setShowRouteMap] = useState(false);
   
-  const timeSlots = [
-    '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', 
-    '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
-    '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30',
-    '20:00', '20:30', '21:00', '21:30', '22:00', '22:30', '23:00', '23:30',
-  ];
+  // Generate time slots for the dropdown
+  const timeSlots = [];
+  for (let h = 0; h < 24; h++) {
+    for (let m = 0; m < 60; m += 30) {
+      timeSlots.push(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`);
+    }
+  }
   
-  const popularDestinations = {
-    en: ['Dubai Mall', 'Burj Khalifa', 'Palm Jumeirah', 'Dubai Marina', 'Airport'],
-    fa: ['دبی مال', 'برج خلیفه', 'نخل جمیرا', 'مارینا دبی', 'فرودگاه'],
-    ar: ['دبي مول', 'برج خليفة', 'نخلة جميرا', 'مرسى دبي', 'المطار']
-  };
+  const popularDestinations = [
+    {
+      key: 'airport',
+      icon: <MapPin className="w-4 h-4" />
+    },
+    {
+      key: 'cityCenter',
+      icon: <MapPin className="w-4 h-4" />
+    },
+    {
+      key: 'mall',
+      icon: <MapPin className="w-4 h-4" />
+    },
+    {
+      key: 'beach',
+      icon: <MapPin className="w-4 h-4" />
+    },
+    {
+      key: 'trainStation',
+      icon: <MapPin className="w-4 h-4" />
+    }
+  ];
 
   // Load Google Maps API on component mount
   useEffect(() => {
@@ -65,8 +94,48 @@ const TaxiPage = () => {
     setSelectedPlaceId(placeId);
   };
   
+  const handleSelectPopularDestination = (destKey: string) => {
+    const dest = getTranslation(destKey, language);
+    setDestination(dest);
+    setSelectedDestination(dest);
+  };
+  
   const handleViewRoute = () => {
     setShowRouteMap(true);
+  };
+  
+  const togglePassengerCount = (increment: boolean) => {
+    if (increment) {
+      setPassengerCount(prev => Math.min(prev + 1, 10));
+    } else {
+      setPassengerCount(prev => Math.max(prev - 1, 1));
+    }
+  };
+  
+  const handleTimeOptionSelect = (option: PickupTimeOption) => {
+    setPickupTimeOption(option);
+    if (option === 'custom') {
+      setShowCalendar(true);
+    } else {
+      setShowCalendar(false);
+      setShowTimeSelect(false);
+    }
+  };
+  
+  const formatSelectedTime = () => {
+    if (pickupTimeOption === 'now') {
+      return getTranslation('now', language);
+    } else if (pickupTimeOption === '15min') {
+      return getTranslation('fifteenMinutes', language);
+    } else if (pickupTimeOption === '30min') {
+      return getTranslation('thirtyMinutes', language);
+    } else if (pickupTimeOption === '1hour') {
+      return getTranslation('oneHour', language);
+    } else if (customDate && customTime) {
+      return `${format(customDate, 'yyyy/MM/dd')} - ${customTime}`;
+    } else {
+      return '';
+    }
   };
   
   const handleSubmit = () => {
@@ -80,11 +149,12 @@ const TaxiPage = () => {
       return;
     }
     
-    if (!pickupTime) {
+    const pickupTimeString = formatSelectedTime();
+    if (pickupTimeOption === 'custom' && (!customDate || !customTime)) {
       toast({
-        title: language === 'en' ? 'Please select a pickup time' : 
-               language === 'fa' ? 'لطفا زمان سوار شدن را انتخاب کنید' : 
-               'الرجاء تحديد وقت الاستلام',
+        title: language === 'en' ? 'Please select date and time' : 
+               language === 'fa' ? 'لطفا تاریخ و زمان را انتخاب کنید' : 
+               'الرجاء تحديد التاريخ والوقت',
         variant: "destructive",
       });
       return;
@@ -97,151 +167,278 @@ const TaxiPage = () => {
       setIsSubmitting(false);
       
       toast({
-        title: language === 'en' ? 'Taxi Requested' : 
-               language === 'fa' ? 'تاکسی درخواست شد' : 
-               'تم طلب سيارة أجرة',
-        description: language === 'en' ? `Your taxi to ${selectedDestination} will arrive at ${pickupTime}` : 
-                     language === 'fa' ? `تاکسی شما به مقصد ${selectedDestination} در ساعت ${pickupTime} خواهد رسید` : 
-                     `ستصل سيارة الأجرة الخاصة بك إلى ${selectedDestination} في الساعة ${pickupTime}`,
+        title: language === 'en' ? 'Taxi Booked' : 
+               language === 'fa' ? 'تاکسی رزرو شد' : 
+               'تم حجز سيارة أجرة',
+        description: language === 'en' 
+          ? `Your taxi to ${selectedDestination} will arrive at ${pickupTimeString}` 
+          : language === 'fa' 
+          ? `تاکسی شما به مقصد ${selectedDestination} در ${pickupTimeString} خواهد رسید` 
+          : `ستصل سيارة الأجرة الخاصة بك إلى ${selectedDestination} في ${pickupTimeString}`,
       });
       
       // Reset form
       setDestination('');
       setSelectedDestination('');
       setSelectedPlaceId('');
-      setPickupTime('');
+      setPickupTimeOption('now');
+      setCustomDate(new Date());
+      setCustomTime('');
+      setShowCalendar(false);
+      setShowTimeSelect(false);
+      setPassengerCount(1);
     }, 1500);
   };
   
   return (
-    <div className="min-h-screen relative">
-      {/* Background Image */}
-      <div 
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ 
-          backgroundImage: "url('https://images.unsplash.com/photo-1559221236-b987549d06c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80')",
-          filter: "brightness(0.7) blur(2px)",
-        }}
-      />
+    <div className="min-h-screen relative bg-gray-50">
+      {/* Background color instead of image for a cleaner look */}
+      <div className="fixed inset-0 bg-gradient-to-b from-blue-50 to-gray-100"></div>
       
-      {/* Overlay for better readability */}
-      <div className="fixed inset-0 bg-black/30 backdrop-blur-[1px]" />
-      
-      {/* Content Container - Using relative positioning to appear above the background */}
+      {/* Content Container */}
       <div className={`relative z-10 min-h-screen p-6 pt-20 ${direction === 'rtl' ? 'font-vazirmatn' : 'font-inter'}`}>
         <LanguageToggle />
         <BackButton />
         
-        <div className="max-w-lg mx-auto animate-slide-up">
+        <div className="max-w-md mx-auto animate-slide-up">
           {/* Header */}
-          <div className="flex flex-col items-center mb-8">
-            <div className="w-16 h-16 rounded-full bg-hotel-gold flex items-center justify-center mb-3 shadow-lg">
-              <Car className="text-white w-8 h-8" />
+          <div className="flex items-center justify-between mb-6 bg-white p-4 rounded-lg shadow-sm">
+            <div>
+              <h1 className="text-xl font-bold text-gray-800 mb-1">
+                {getTranslation('requestTaxi', language)}
+              </h1>
+              <p className="text-sm text-gray-600">
+                {getTranslation('bookTaxiSubtitle', language)}
+              </p>
             </div>
-            <h1 className="text-2xl font-medium text-white drop-shadow-md">
-              {getTranslation('taxi', language)}
-            </h1>
+            <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
+              <Car className="text-amber-600 w-6 h-6" />
+            </div>
           </div>
           
-          {/* Taxi request form */}
-          <div className="bg-white/85 backdrop-blur-md shadow-xl rounded-xl p-6 text-start border border-white/40">
-            {/* Destination input with Google Places */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-2">
+          {/* Main Form */}
+          <div className="bg-white rounded-xl shadow-sm mb-6">
+            {/* Destination Section */}
+            <div className="p-4 border-b">
+              <h2 className="text-lg font-medium mb-3 flex justify-between">
                 {getTranslation('destination', language)}
-              </label>
+              </h2>
               
               {apiLoaded ? (
-                <>
-                  <LocationSearchInput
-                    placeholder={
-                      language === 'en' ? 'Search for a destination' : 
-                      language === 'fa' ? 'جستجوی مقصد' : 
-                      'ابحث عن وجهة'
-                    }
-                    value={destination}
-                    onChange={setDestination}
-                    onSelect={handleSelectDestination}
-                    className="pl-10" // Add padding for the icon
-                  />
-                  
-                  {/* Selected destination display */}
-                  {selectedDestination && (
-                    <SelectedLocationDisplay
-                      address={selectedDestination}
-                      onViewRoute={handleViewRoute}
-                    />
-                  )}
-                </>
+                <LocationSearchInput
+                  placeholder={getTranslation('enterDestination', language)}
+                  value={destination}
+                  onChange={setDestination}
+                  onSelect={handleSelectDestination}
+                  className="pl-10"
+                />
               ) : (
-                // Fallback input when Google Maps API is not loaded
-                <div>
-                  <input
-                    type="text"
-                    value={destination}
-                    onChange={(e) => {
-                      setDestination(e.target.value);
-                      setSelectedDestination(e.target.value);
-                    }}
-                    className="w-full px-4 py-3 rounded-lg border border-hotel-cream bg-white focus:outline-none focus:ring-2 focus:ring-hotel-gold transition-all"
-                    placeholder={language === 'en' ? 'Enter destination' : 
-                                language === 'fa' ? 'مقصد را وارد کنید' : 
-                                'أدخل الوجهة'}
-                  />
-                </div>
+                <Input
+                  type="text"
+                  value={destination}
+                  onChange={(e) => {
+                    setDestination(e.target.value);
+                    setSelectedDestination(e.target.value);
+                  }}
+                  placeholder={getTranslation('enterDestination', language)}
+                  className="w-full"
+                />
+              )}
+              
+              {/* Selected destination display */}
+              {selectedDestination && (
+                <SelectedLocationDisplay
+                  address={selectedDestination}
+                  onViewRoute={handleViewRoute}
+                />
               )}
               
               {/* Popular destinations */}
               <div className="mt-3">
-                <p className="text-xs text-hotel-charcoal opacity-70 mb-2">
-                  {language === 'en' ? 'Popular destinations:' : 
-                  language === 'fa' ? 'مقاصد محبوب:' : 
-                  'الوجهات الشعبية:'}
+                <p className="text-sm text-gray-600 mb-2">
+                  {getTranslation('popularDestinations', language)}:
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {popularDestinations[language].map((dest, index) => (
+                  {popularDestinations.map((dest, index) => (
                     <Button
                       key={index}
                       variant="outline"
                       size="sm"
-                      className="text-xs border-hotel-cream hover:bg-hotel-gold hover:text-white"
-                      onClick={() => {
-                        setDestination(dest);
-                        setSelectedDestination(dest);
-                      }}
+                      className="border-gray-200 hover:bg-gray-100 text-gray-700 flex items-center"
+                      onClick={() => handleSelectPopularDestination(dest.key)}
                     >
-                      {dest}
+                      {dest.icon}
+                      <span className="ml-1">{getTranslation(dest.key, language)}</span>
                     </Button>
                   ))}
                 </div>
               </div>
             </div>
             
-            {/* Pickup time selection */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-2 flex items-center">
-                <Clock className="w-4 h-4 mr-2 text-hotel-gold" />
+            {/* Pickup Time Section */}
+            <div className="p-4 border-b">
+              <h2 className="text-lg font-medium mb-3 flex justify-between">
                 {getTranslation('pickupTime', language)}
-              </label>
-              <div className="grid grid-cols-4 gap-2">
-                {timeSlots.map((time) => (
-                  <button
-                    key={time}
-                    className={cn(
-                      "py-2 px-1 rounded-md text-sm transition-all",
-                      pickupTime === time 
-                        ? "bg-hotel-gold text-white shadow-md" 
-                        : "bg-white border border-hotel-cream hover:bg-hotel-blue hover:text-white"
-                    )}
-                    onClick={() => setPickupTime(time)}
-                  >
-                    {time}
-                  </button>
-                ))}
+              </h2>
+              
+              {/* Time options */}
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <Button
+                  variant={pickupTimeOption === 'now' ? "default" : "outline"}
+                  className={cn(
+                    pickupTimeOption === 'now' ? "bg-hotel-gold text-white" : "border-gray-200"
+                  )}
+                  onClick={() => handleTimeOptionSelect('now')}
+                >
+                  {getTranslation('now', language)}
+                </Button>
+                
+                <Button
+                  variant={pickupTimeOption === '15min' ? "default" : "outline"}
+                  className={cn(
+                    pickupTimeOption === '15min' ? "bg-hotel-gold text-white" : "border-gray-200"
+                  )}
+                  onClick={() => handleTimeOptionSelect('15min')}
+                >
+                  {getTranslation('fifteenMinutes', language)}
+                </Button>
+                
+                <Button
+                  variant={pickupTimeOption === '30min' ? "default" : "outline"}
+                  className={cn(
+                    pickupTimeOption === '30min' ? "bg-hotel-gold text-white" : "border-gray-200"
+                  )}
+                  onClick={() => handleTimeOptionSelect('30min')}
+                >
+                  {getTranslation('thirtyMinutes', language)}
+                </Button>
+                
+                <Button
+                  variant={pickupTimeOption === '1hour' ? "default" : "outline"}
+                  className={cn(
+                    pickupTimeOption === '1hour' ? "bg-hotel-gold text-white" : "border-gray-200"
+                  )}
+                  onClick={() => handleTimeOptionSelect('1hour')}
+                >
+                  {getTranslation('oneHour', language)}
+                </Button>
+                
+                <Button
+                  variant={pickupTimeOption === 'custom' ? "default" : "outline"}
+                  className={cn(
+                    "col-span-2",
+                    pickupTimeOption === 'custom' ? "bg-hotel-gold text-white" : "border-gray-200"
+                  )}
+                  onClick={() => handleTimeOptionSelect('custom')}
+                >
+                  {getTranslation('customTime', language)}
+                </Button>
               </div>
+              
+              {/* Custom date and time selection */}
+              {showCalendar && (
+                <div className="mt-4 space-y-4 animate-fade-in">
+                  <div>
+                    <h3 className="text-sm font-medium mb-2">
+                      {getTranslation('selectDate', language)}
+                    </h3>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-between border-gray-200 text-gray-700"
+                        >
+                          {customDate ? format(customDate, 'PPP') : getTranslation('selectDate', language)}
+                          <Calendar className="ml-2 h-4 w-4 text-gray-500" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={customDate}
+                          onSelect={setCustomDate}
+                          disabled={(date) => date < new Date()}
+                          initialFocus
+                          className="p-3 pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-sm font-medium mb-2">
+                      {getTranslation('selectTime', language)}
+                    </h3>
+                    <Popover open={showTimeSelect} onOpenChange={setShowTimeSelect}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-between border-gray-200 text-gray-700"
+                        >
+                          {customTime || getTranslation('selectTime', language)}
+                          <Clock className="ml-2 h-4 w-4 text-gray-500" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-60 p-0 max-h-60 overflow-y-auto">
+                        <div className="py-1">
+                          {timeSlots.map((time) => (
+                            <button
+                              key={time}
+                              className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                              onClick={() => {
+                                setCustomTime(time);
+                                setShowTimeSelect(false);
+                              }}
+                            >
+                              {time}
+                            </button>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
+              )}
             </div>
             
-            {/* Submit button */}
+            {/* Passenger Count Section */}
+            <div className="p-4">
+              <h2 className="text-lg font-medium mb-3">
+                {getTranslation('passengerCount', language)}
+              </h2>
+              
+              <div className="relative">
+                <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                  <span>
+                    {passengerCount} {getTranslation(passengerCount === 1 ? 'passenger' : 'passengers', language)}
+                  </span>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 w-8 p-0 border-gray-200"
+                      onClick={() => togglePassengerCount(false)}
+                      disabled={passengerCount <= 1}
+                    >
+                      -
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 w-8 p-0 border-gray-200"
+                      onClick={() => togglePassengerCount(true)}
+                      disabled={passengerCount >= 10}
+                    >
+                      +
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Book Button */}
+          <div className="space-y-3">
             <Button
               className="w-full bg-hotel-gold text-white py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all active:scale-95 flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed shadow-md h-12"
               onClick={handleSubmit}
@@ -249,17 +446,18 @@ const TaxiPage = () => {
             >
               {isSubmitting ? (
                 <span className="animate-pulse">
-                  {language === 'en' ? 'Requesting...' : 
-                  language === 'fa' ? 'در حال درخواست...' : 
-                  'جاري الطلب...'}
+                  {language === 'en' ? 'Booking...' : 
+                  language === 'fa' ? 'در حال رزرو...' : 
+                  'جاري الحجز...'}
                 </span>
               ) : (
-                <>
-                  <CheckCircle className="w-5 h-5 mr-2" />
-                  {getTranslation('requestTaxi', language)}
-                </>
+                getTranslation('bookTaxi', language)
               )}
             </Button>
+            
+            <p className="text-sm text-center text-gray-500">
+              {getTranslation('taxiCoordinationMessage', language)}
+            </p>
           </div>
         </div>
       </div>
