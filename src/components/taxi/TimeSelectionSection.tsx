@@ -133,7 +133,7 @@ const TimeSelectionSection: React.FC<TimeSelectionSectionProps> = ({
                   <Clock className="ml-2 h-4 w-4 text-gray-600" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-white border border-gray-300 shadow-lg">
+              <PopoverContent className="w-auto p-0 bg-white border border-gray-300 shadow-lg calendar-wrapper">
                 <Calendar
                   mode="single"
                   selected={customDate}
@@ -160,7 +160,7 @@ const TimeSelectionSection: React.FC<TimeSelectionSectionProps> = ({
                   <Clock className="ml-2 h-4 w-4 text-gray-600" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-60 p-0 max-h-60 overflow-y-auto bg-white border border-gray-300 shadow-lg">
+              <PopoverContent className="w-60 p-0 max-h-60 overflow-y-auto bg-white border border-gray-300 shadow-lg popover-content">
                 <div className="py-1">
                   {timeSlots.map((time) => (
                     <button

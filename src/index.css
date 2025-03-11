@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -21,6 +20,11 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Ensure consistent font application throughout the app */
+  input, button, select, textarea, div, p, h1, h2, h3, h4, h5, h6, span {
+    font-family: inherit;
   }
 }
 
@@ -197,4 +201,19 @@
 /* Input box enhancement */
 .chat-input-container {
   @apply bg-black/20 backdrop-blur-md border-t border-white/10 py-4;
+}
+
+/* Ensure consistent text rendering in the taxi page */
+.taxi-page-container input,
+.taxi-page-container button,
+.taxi-page-container select,
+.taxi-page-container div,
+.taxi-page-container p {
+  @apply font-inherit;
+}
+
+/* Consistent popover and calendar styling */
+.popover-content,
+.calendar-wrapper {
+  @apply bg-white text-gray-800 shadow-md border border-gray-200;
 }
