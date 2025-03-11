@@ -1,18 +1,30 @@
 
-import React, { useState } from 'react';
-import { Car, MapPin, Clock, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Car, Clock, CheckCircle } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { getTranslation } from '@/utils/translations';
 import LanguageToggle from '@/components/LanguageToggle';
 import BackButton from '@/components/BackButton';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import LocationSearchInput from '@/components/LocationSearchInput';
+import SelectedLocationDisplay from '@/components/SelectedLocationDisplay';
+import RouteMapDialog from '@/components/RouteMapDialog';
+import { loadGoogleMapsApi } from '@/utils/maps';
+
+// Replace with your Google Maps API key
+const GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY_HERE'; 
 
 const TaxiPage = () => {
   const { language, direction } = useLanguage();
   const [destination, setDestination] = useState('');
+  const [selectedDestination, setSelectedDestination] = useState('');
+  const [selectedPlaceId, setSelectedPlaceId] = useState('');
   const [pickupTime, setPickupTime] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiLoaded, setApiLoaded] = useState(false);
+  const [showRouteMap, setShowRouteMap] = useState(false);
   
   const timeSlots = [
     '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', 
@@ -22,13 +34,43 @@ const TaxiPage = () => {
   ];
   
   const popularDestinations = {
-    en: ['Airport', 'City Center', 'Shopping Mall', 'Museum District', 'Beach'],
-    fa: ['فرودگاه', 'مرکز شهر', 'مرکز خرید', 'منطقه موزه', 'ساحل'],
-    ar: ['المطار', 'وسط المدينة', 'مركز التسوق', 'منطقة المتحف', 'الشاطئ']
+    en: ['Dubai Mall', 'Burj Khalifa', 'Palm Jumeirah', 'Dubai Marina', 'Airport'],
+    fa: ['دبی مال', 'برج خلیفه', 'نخل جمیرا', 'مارینا دبی', 'فرودگاه'],
+    ar: ['دبي مول', 'برج خليفة', 'نخلة جميرا', 'مرسى دبي', 'المطار']
+  };
+
+  // Load Google Maps API on component mount
+  useEffect(() => {
+    const loadApi = async () => {
+      try {
+        await loadGoogleMapsApi(GOOGLE_MAPS_API_KEY);
+        setApiLoaded(true);
+      } catch (error) {
+        console.error('Failed to load Google Maps API:', error);
+        toast({
+          title: language === 'en' ? 'Error loading maps' : 
+                 language === 'fa' ? 'خطا در بارگیری نقشه' : 
+                 'خطأ في تحميل الخرائط',
+          variant: "destructive",
+        });
+      }
+    };
+    
+    loadApi();
+  }, [language]);
+  
+  const handleSelectDestination = (address: string, placeId: string) => {
+    setDestination(address);
+    setSelectedDestination(address);
+    setSelectedPlaceId(placeId);
+  };
+  
+  const handleViewRoute = () => {
+    setShowRouteMap(true);
   };
   
   const handleSubmit = () => {
-    if (!destination.trim()) {
+    if (!selectedDestination.trim()) {
       toast({
         title: language === 'en' ? 'Please enter a destination' : 
                language === 'fa' ? 'لطفا مقصد را وارد کنید' : 
@@ -58,13 +100,15 @@ const TaxiPage = () => {
         title: language === 'en' ? 'Taxi Requested' : 
                language === 'fa' ? 'تاکسی درخواست شد' : 
                'تم طلب سيارة أجرة',
-        description: language === 'en' ? `Your taxi to ${destination} will arrive at ${pickupTime}` : 
-                     language === 'fa' ? `تاکسی شما به مقصد ${destination} در ساعت ${pickupTime} خواهد رسید` : 
-                     `ستصل سيارة الأجرة الخاصة بك إلى ${destination} في الساعة ${pickupTime}`,
+        description: language === 'en' ? `Your taxi to ${selectedDestination} will arrive at ${pickupTime}` : 
+                     language === 'fa' ? `تاکسی شما به مقصد ${selectedDestination} در ساعت ${pickupTime} خواهد رسید` : 
+                     `ستصل سيارة الأجرة الخاصة بك إلى ${selectedDestination} في الساعة ${pickupTime}`,
       });
       
       // Reset form
       setDestination('');
+      setSelectedDestination('');
+      setSelectedPlaceId('');
       setPickupTime('');
     }, 1500);
   };
@@ -101,21 +145,51 @@ const TaxiPage = () => {
           
           {/* Taxi request form */}
           <div className="bg-white/85 backdrop-blur-md shadow-xl rounded-xl p-6 text-start border border-white/40">
-            {/* Destination input */}
+            {/* Destination input with Google Places */}
             <div className="mb-6">
-              <label className="block text-sm font-medium mb-2 flex items-center">
-                <MapPin className="w-4 h-4 mr-2 text-hotel-gold" />
+              <label className="block text-sm font-medium mb-2">
                 {getTranslation('destination', language)}
               </label>
-              <input
-                type="text"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-hotel-cream bg-white focus:outline-none focus:ring-2 focus:ring-hotel-gold transition-all"
-                placeholder={language === 'en' ? 'Enter destination' : 
-                            language === 'fa' ? 'مقصد را وارد کنید' : 
-                            'أدخل الوجهة'}
-              />
+              
+              {apiLoaded ? (
+                <>
+                  <LocationSearchInput
+                    placeholder={
+                      language === 'en' ? 'Search for a destination' : 
+                      language === 'fa' ? 'جستجوی مقصد' : 
+                      'ابحث عن وجهة'
+                    }
+                    value={destination}
+                    onChange={setDestination}
+                    onSelect={handleSelectDestination}
+                    className="pl-10" // Add padding for the icon
+                  />
+                  
+                  {/* Selected destination display */}
+                  {selectedDestination && (
+                    <SelectedLocationDisplay
+                      address={selectedDestination}
+                      onViewRoute={handleViewRoute}
+                    />
+                  )}
+                </>
+              ) : (
+                // Fallback input when Google Maps API is not loaded
+                <div>
+                  <input
+                    type="text"
+                    value={destination}
+                    onChange={(e) => {
+                      setDestination(e.target.value);
+                      setSelectedDestination(e.target.value);
+                    }}
+                    className="w-full px-4 py-3 rounded-lg border border-hotel-cream bg-white focus:outline-none focus:ring-2 focus:ring-hotel-gold transition-all"
+                    placeholder={language === 'en' ? 'Enter destination' : 
+                                language === 'fa' ? 'مقصد را وارد کنید' : 
+                                'أدخل الوجهة'}
+                  />
+                </div>
+              )}
               
               {/* Popular destinations */}
               <div className="mt-3">
@@ -126,16 +200,18 @@ const TaxiPage = () => {
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {popularDestinations[language].map((dest, index) => (
-                    <button
+                    <Button
                       key={index}
-                      className={cn(
-                        "text-xs px-3 py-1 rounded-full transition-all",
-                        "bg-hotel-cream hover:bg-hotel-gold hover:text-white"
-                      )}
-                      onClick={() => setDestination(dest)}
+                      variant="outline"
+                      size="sm"
+                      className="text-xs border-hotel-cream hover:bg-hotel-gold hover:text-white"
+                      onClick={() => {
+                        setDestination(dest);
+                        setSelectedDestination(dest);
+                      }}
                     >
                       {dest}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
@@ -166,8 +242,8 @@ const TaxiPage = () => {
             </div>
             
             {/* Submit button */}
-            <button
-              className="w-full bg-hotel-gold text-white py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all active:scale-95 flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed shadow-md"
+            <Button
+              className="w-full bg-hotel-gold text-white py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all active:scale-95 flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed shadow-md h-12"
               onClick={handleSubmit}
               disabled={isSubmitting}
             >
@@ -183,10 +259,17 @@ const TaxiPage = () => {
                   {getTranslation('requestTaxi', language)}
                 </>
               )}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
+      
+      {/* Route Map Dialog */}
+      <RouteMapDialog
+        open={showRouteMap}
+        onOpenChange={setShowRouteMap}
+        destination={selectedDestination}
+      />
     </div>
   );
 };

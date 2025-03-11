@@ -83,6 +83,10 @@ export type TranslationKey =
   | 'destination'
   | 'pickupTime'
   | 'requestTaxi'
+  | 'searchDestination'
+  | 'popularDestinations'
+  | 'selectedDestination'
+  | 'viewRoute'
   
   // Cleaning
   | 'cleaningType'
