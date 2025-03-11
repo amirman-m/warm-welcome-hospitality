@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Info, Building, Music, MapPin, Hotel, Book } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
-import { getTranslation } from '@/utils/translations';
+import { getTranslation, TranslationKey } from '@/utils/translations';
 import LanguageToggle from '@/components/LanguageToggle';
 import BackButton from '@/components/BackButton';
 import { cn } from '@/lib/utils';
@@ -26,21 +26,21 @@ const InformationPage = () => {
     }
   };
   
-  // Hotel amenities list
+  // Hotel amenities list with properly typed keys as TranslationKey
   const hotelAmenities = [
-    { key: 'swimmingPool', icon: '🏊‍♂️' },
-    { key: 'fitnessCenter', icon: '💪' },
-    { key: 'spaWellness', icon: '💆‍♀️' },
-    { key: 'businessCenter', icon: '💼' },
-    { key: 'restaurantBar', icon: '🍽️' }
+    { key: 'swimmingPool' as TranslationKey, icon: '🏊‍♂️' },
+    { key: 'fitnessCenter' as TranslationKey, icon: '💪' },
+    { key: 'spaWellness' as TranslationKey, icon: '💆‍♀️' },
+    { key: 'businessCenter' as TranslationKey, icon: '💼' },
+    { key: 'restaurantBar' as TranslationKey, icon: '🍽️' }
   ];
   
-  // Hotel rules list
+  // Hotel rules list with properly typed keys as TranslationKey
   const hotelRules = [
-    { key: 'checkInOut', icon: '🔑' },
-    { key: 'breakfastHours', icon: '☕' },
-    { key: 'petsPolicy', icon: '🐾' },
-    { key: 'smokingPolicy', icon: '🚭' }
+    { key: 'checkInOut' as TranslationKey, icon: '🔑' },
+    { key: 'breakfastHours' as TranslationKey, icon: '☕' },
+    { key: 'petsPolicy' as TranslationKey, icon: '🐾' },
+    { key: 'smokingPolicy' as TranslationKey, icon: '🚭' }
   ];
   
   return (
@@ -133,7 +133,7 @@ const InformationPage = () => {
                   </h3>
                   <ul className="space-y-2 list-inside">
                     {hotelAmenities.map((amenity) => (
-                      <li key={amenity.key} className="flex items-start gap-3">
+                      <li key={amenity.key.toString()} className="flex items-start gap-3">
                         <span className="text-xl">{amenity.icon}</span>
                         <span className="text-hotel-charcoal">
                           {getTranslation(amenity.key, language)}
@@ -150,7 +150,7 @@ const InformationPage = () => {
                   </h3>
                   <ul className="space-y-2 list-inside">
                     {hotelRules.map((rule) => (
-                      <li key={rule.key} className="flex items-start gap-3">
+                      <li key={rule.key.toString()} className="flex items-start gap-3">
                         <span className="text-xl">{rule.icon}</span>
                         <span className="text-hotel-charcoal">
                           {getTranslation(rule.key, language)}
