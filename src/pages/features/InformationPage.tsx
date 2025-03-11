@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Info, Building, Music, MapPin } from 'lucide-react';
+import { Info, Building, Music, MapPin, Hotel, Book } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { getTranslation } from '@/utils/translations';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -25,6 +25,23 @@ const InformationPage = () => {
       ar: `استمتع ببرنامجنا الترفيهي اليومي الذي يتضمن موسيقى حية وعروض ثقافية وليالي مواضيعية. يستضيف ردهة الاستقبال لدينا عروض البيانو كل مساء من الساعة 7-10 مساءً. يستضيف البار الموجود على السطح جلسات دي جي في ليالي الجمعة والسبت. تشمل الأنشطة الأسبوعية تذوق النبيذ ودروس الطبخ وجلسات اليوغا بجانب المسبح.`
     }
   };
+  
+  // Hotel amenities list
+  const hotelAmenities = [
+    { key: 'swimmingPool', icon: '🏊‍♂️' },
+    { key: 'fitnessCenter', icon: '💪' },
+    { key: 'spaWellness', icon: '💆‍♀️' },
+    { key: 'businessCenter', icon: '💼' },
+    { key: 'restaurantBar', icon: '🍽️' }
+  ];
+  
+  // Hotel rules list
+  const hotelRules = [
+    { key: 'checkInOut', icon: '🔑' },
+    { key: 'breakfastHours', icon: '☕' },
+    { key: 'petsPolicy', icon: '🐾' },
+    { key: 'smokingPolicy', icon: '🚭' }
+  ];
   
   return (
     <div className={`min-h-screen relative ${direction === 'rtl' ? 'font-vazirmatn' : 'font-inter'}`}>
@@ -99,13 +116,49 @@ const InformationPage = () => {
           {/* Content - Enhanced glass effect with deeper shadow */}
           <div className="bg-white/85 backdrop-blur-md rounded-xl p-6 text-start shadow-2xl border border-white/40">
             {activeTab === 'about' && (
-              <div className="animate-fade-in">
-                <h2 className="text-lg font-medium mb-4 text-hotel-charcoal">
-                  {getTranslation('aboutHotel', language)}
-                </h2>
-                <p className="text-hotel-charcoal">
-                  {information.about[language]}
-                </p>
+              <div className="animate-fade-in space-y-6">
+                <div>
+                  <h2 className="text-lg font-medium mb-4 text-hotel-charcoal">
+                    {getTranslation('aboutHotel', language)}
+                  </h2>
+                  <p className="text-hotel-charcoal">
+                    {information.about[language]}
+                  </p>
+                </div>
+                
+                {/* Hotel Amenities Section */}
+                <div>
+                  <h3 className="text-lg font-medium mb-3 text-hotel-charcoal border-b border-hotel-gold/50 pb-2">
+                    {getTranslation('hotelAmenities', language)}
+                  </h3>
+                  <ul className="space-y-2 list-inside">
+                    {hotelAmenities.map((amenity) => (
+                      <li key={amenity.key} className="flex items-start gap-3">
+                        <span className="text-xl">{amenity.icon}</span>
+                        <span className="text-hotel-charcoal">
+                          {getTranslation(amenity.key, language)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                
+                {/* Hotel Rules Section */}
+                <div>
+                  <h3 className="text-lg font-medium mb-3 text-hotel-charcoal border-b border-hotel-gold/50 pb-2">
+                    {getTranslation('hotelRules', language)}
+                  </h3>
+                  <ul className="space-y-2 list-inside">
+                    {hotelRules.map((rule) => (
+                      <li key={rule.key} className="flex items-start gap-3">
+                        <span className="text-xl">{rule.icon}</span>
+                        <span className="text-hotel-charcoal">
+                          {getTranslation(rule.key, language)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             )}
             
