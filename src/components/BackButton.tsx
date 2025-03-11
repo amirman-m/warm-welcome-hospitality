@@ -18,7 +18,7 @@ const BackButton: React.FC = () => {
   return (
     <Button 
       onClick={handleBackClick}
-      className="flex items-center bg-white/80 text-hotel-charcoal px-4 py-2 rounded-full shadow-md hover:bg-hotel-gold hover:text-white transition-all duration-300 absolute top-6 left-6 z-20"
+      className="flex items-center bg-hotel-gold text-white px-4 py-2 rounded-full shadow-md hover:bg-hotel-charcoal transition-all duration-300 absolute top-6 left-6 z-20"
       aria-label="Back to menu"
       type="button"
       size="sm"

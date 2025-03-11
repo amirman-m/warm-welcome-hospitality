@@ -59,13 +59,13 @@ const MealSelection: React.FC<MealSelectionProps> = ({
                    : item.nameAr;
     
     return (
-      <div key={item.id} className="flex items-center justify-between py-2 border-b border-hotel-cream">
+      <div key={item.id} className="flex items-center justify-between py-2 border-b border-hotel-cream/50">
         <span className="flex-1">{itemName}</span>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="icon"
-            className="h-8 w-8 rounded-full"
+            className="h-8 w-8 rounded-full bg-white hover:bg-hotel-gold hover:text-white"
             onClick={() => updateItemQuantity(item.id, 'decrement', type)}
           >
             <Minus className="h-4 w-4" />
@@ -74,7 +74,7 @@ const MealSelection: React.FC<MealSelectionProps> = ({
           <Button
             variant="outline"
             size="icon"
-            className="h-8 w-8 rounded-full"
+            className="h-8 w-8 rounded-full bg-white hover:bg-hotel-gold hover:text-white"
             onClick={() => updateItemQuantity(item.id, 'increment', type)}
           >
             <Plus className="h-4 w-4" />
@@ -92,65 +92,67 @@ const MealSelection: React.FC<MealSelectionProps> = ({
         : 'اختيار وجبتك مسبقًا (اختياري)'}
       </h4>
       
-      <ScrollArea className="h-64 pr-4">
-        {/* Drinks section */}
-        <div className="mb-4">
-          <button 
-            onClick={() => setDrinksExpanded(!drinksExpanded)}
-            className="flex items-center justify-between w-full mb-2 font-medium"
-          >
-            <div className="flex items-center">
-              <GlassWater className="w-4 h-4 mr-2" />
-              {drinksSectionTitle}
-            </div>
-            {drinksExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-          </button>
+      <ScrollArea className="h-[320px] pr-3">
+        <div className="pr-2">
+          {/* Drinks section */}
+          <div className="mb-4">
+            <button 
+              onClick={() => setDrinksExpanded(!drinksExpanded)}
+              className="flex items-center justify-between w-full mb-2 font-medium"
+            >
+              <div className="flex items-center">
+                <GlassWater className="w-4 h-4 mr-2" />
+                {drinksSectionTitle}
+              </div>
+              {drinksExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+            
+            {drinksExpanded && (
+              <div className="pl-6">
+                {selectedDrinks.map(drink => renderMenuItem(drink, 'drinks'))}
+              </div>
+            )}
+          </div>
           
-          {drinksExpanded && (
-            <div className="pl-6">
-              {selectedDrinks.map(drink => renderMenuItem(drink, 'drinks'))}
-            </div>
-          )}
-        </div>
-        
-        {/* Desserts section */}
-        <div className="mb-4">
-          <button 
-            onClick={() => setDessertsExpanded(!dessertsExpanded)}
-            className="flex items-center justify-between w-full mb-2 font-medium"
-          >
-            <div className="flex items-center">
-              <IceCream className="w-4 h-4 mr-2" />
-              {dessertsSectionTitle}
-            </div>
-            {dessertsExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-          </button>
+          {/* Desserts section */}
+          <div className="mb-4">
+            <button 
+              onClick={() => setDessertsExpanded(!dessertsExpanded)}
+              className="flex items-center justify-between w-full mb-2 font-medium"
+            >
+              <div className="flex items-center">
+                <IceCream className="w-4 h-4 mr-2" />
+                {dessertsSectionTitle}
+              </div>
+              {dessertsExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+            
+            {dessertsExpanded && (
+              <div className="pl-6">
+                {selectedDesserts.map(dessert => renderMenuItem(dessert, 'desserts'))}
+              </div>
+            )}
+          </div>
           
-          {dessertsExpanded && (
-            <div className="pl-6">
-              {selectedDesserts.map(dessert => renderMenuItem(dessert, 'desserts'))}
-            </div>
-          )}
-        </div>
-        
-        {/* Meals section */}
-        <div className="mb-4">
-          <button 
-            onClick={() => setMealsExpanded(!mealsExpanded)}
-            className="flex items-center justify-between w-full mb-2 font-medium"
-          >
-            <div className="flex items-center">
-              <Pizza className="w-4 h-4 mr-2" />
-              {mealsSectionTitle}
-            </div>
-            {mealsExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-          </button>
-          
-          {mealsExpanded && (
-            <div className="pl-6">
-              {selectedMeals.map(meal => renderMenuItem(meal, 'meals'))}
-            </div>
-          )}
+          {/* Meals section */}
+          <div className="mb-4">
+            <button 
+              onClick={() => setMealsExpanded(!mealsExpanded)}
+              className="flex items-center justify-between w-full mb-2 font-medium"
+            >
+              <div className="flex items-center">
+                <Pizza className="w-4 h-4 mr-2" />
+                {mealsSectionTitle}
+              </div>
+              {mealsExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+            
+            {mealsExpanded && (
+              <div className="pl-6">
+                {selectedMeals.map(meal => renderMenuItem(meal, 'meals'))}
+              </div>
+            )}
+          </div>
         </div>
       </ScrollArea>
     </div>
