@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Calendar, Coffee, Utensils, Clock, CircleDot, GlassWater, Pizza, IceCream, Plus, Minus, ChevronDown, ChevronUp } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
@@ -18,6 +19,18 @@ interface MenuItem {
   nameAr: string;
   nameFa: string;
   quantity: number;
+}
+
+interface TableInfo {
+  id: number;
+  available: boolean;
+  seats: number;
+  position: {
+    row: number;
+    col: number;
+    type: 'square' | 'rectangle' | 'circle';
+    orientation?: 'vertical' | 'horizontal';
+  };
 }
 
 const drinks: MenuItem[] = [
@@ -41,6 +54,34 @@ const meals: MenuItem[] = [
   { id: 4, name: 'Seafood Platter', nameAr: 'طبق مأكولات بحرية', nameFa: 'بشقاب غذای دریایی', quantity: 0 },
 ];
 
+// Define the restaurant layout with tables
+const restaurantTables: TableInfo[] = [
+  // First row (top)
+  { id: 1, available: true, seats: 4, position: { row: 0, col: 0, type: 'square' } },
+  { id: 2, available: false, seats: 4, position: { row: 0, col: 2, type: 'square' } },
+  { id: 3, available: true, seats: 4, position: { row: 0, col: 4, type: 'square' } },
+  { id: 4, available: true, seats: 4, position: { row: 0, col: 6, type: 'square' } },
+  { id: 5, available: false, seats: 4, position: { row: 0, col: 8, type: 'square' } },
+  
+  // Second row (center top)
+  { id: 6, available: true, seats: 6, position: { row: 2, col: 1, type: 'rectangle', orientation: 'horizontal' } },
+  { id: 7, available: true, seats: 6, position: { row: 2, col: 5, type: 'rectangle', orientation: 'horizontal' } },
+  
+  // Third row (center)
+  { id: 8, available: false, seats: 8, position: { row: 4, col: 3, type: 'rectangle', orientation: 'horizontal' } },
+  
+  // Fourth row (center bottom)
+  { id: 9, available: true, seats: 6, position: { row: 6, col: 2, type: 'rectangle', orientation: 'horizontal' } },
+  { id: 10, available: true, seats: 4, position: { row: 6, col: 6, type: 'square' } },
+  
+  // Fifth row (bottom)
+  { id: 11, available: false, seats: 4, position: { row: 8, col: 0, type: 'square' } },
+  { id: 12, available: true, seats: 4, position: { row: 8, col: 2, type: 'square' } },
+  { id: 13, available: true, seats: 4, position: { row: 8, col: 4, type: 'square' } },
+  { id: 14, available: true, seats: 4, position: { row: 8, col: 6, type: 'square' } },
+  { id: 15, available: true, seats: 4, position: { row: 8, col: 8, type: 'square' } },
+];
+
 const BookingPage = () => {
   const { language, direction } = useLanguage();
   const [activeBooking, setActiveBooking] = useState<ActivityType>('table');
@@ -48,6 +89,7 @@ const BookingPage = () => {
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedTable, setSelectedTable] = useState<number | null>(null);
   const [timeSlots, setTimeSlots] = useState<string[]>([]);
+  const [hoveredTable, setHoveredTable] = useState<number | null>(null);
   
   // New state for meal selection
   const [showMealSelection, setShowMealSelection] = useState(false);
@@ -59,11 +101,6 @@ const BookingPage = () => {
   const [drinksExpanded, setDrinksExpanded] = useState(true);
   const [dessertsExpanded, setDessertsExpanded] = useState(true);
   const [mealsExpanded, setMealsExpanded] = useState(true);
-  
-  const tables = Array.from({ length: 12 }, (_, i) => ({
-    id: i + 1,
-    available: ![2, 5, 8, 11].includes(i + 1), // Some tables are unavailable
-  }));
   
   // Update time slots when meal type changes
   useEffect(() => {
@@ -138,7 +175,8 @@ const BookingPage = () => {
     if (language === 'en') {
       successMessage = `Your ${getActivityName(activeBooking, 'en')} has been booked for ${selectedTime}`;
       if (activeBooking === 'table') {
-        successMessage += ` (${getMealName(selectedMeal, 'en')}, Table ${selectedTable})`;
+        const tableInfo = restaurantTables.find(t => t.id === selectedTable);
+        successMessage += ` (${getMealName(selectedMeal, 'en')}, Table ${selectedTable} - ${tableInfo?.seats} seats)`;
         
         // Add meal selection information if available
         if (showMealSelection && (selectedMeal === 'lunch' || selectedMeal === 'dinner')) {
@@ -151,7 +189,8 @@ const BookingPage = () => {
     } else if (language === 'fa') {
       successMessage = `${getActivityName(activeBooking, 'fa')} شما برای ساعت ${selectedTime} رزرو شد`;
       if (activeBooking === 'table') {
-        successMessage += ` (${getMealName(selectedMeal, 'fa')}، میز ${selectedTable})`;
+        const tableInfo = restaurantTables.find(t => t.id === selectedTable);
+        successMessage += ` (${getMealName(selectedMeal, 'fa')}، میز ${selectedTable} - ${tableInfo?.seats} صندلی)`;
         
         // Add meal selection information if available
         if (showMealSelection && (selectedMeal === 'lunch' || selectedMeal === 'dinner')) {
@@ -164,7 +203,8 @@ const BookingPage = () => {
     } else {
       successMessage = `تم حجز ${getActivityName(activeBooking, 'ar')} الخاص بك للساعة ${selectedTime}`;
       if (activeBooking === 'table') {
-        successMessage += ` (${getMealName(selectedMeal, 'ar')}، طاولة ${selectedTable})`;
+        const tableInfo = restaurantTables.find(t => t.id === selectedTable);
+        successMessage += ` (${getMealName(selectedMeal, 'ar')}، طاولة ${selectedTable} - ${tableInfo?.seats} مقاعد)`;
         
         // Add meal selection information if available
         if (showMealSelection && (selectedMeal === 'lunch' || selectedMeal === 'dinner')) {
@@ -269,6 +309,89 @@ const BookingPage = () => {
       return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
     }
     return time;
+  };
+  
+  // Render a table in the restaurant map
+  const renderTable = (table: TableInfo) => {
+    const isSelected = selectedTable === table.id;
+    const isHovered = hoveredTable === table.id;
+    
+    // Define table dimensions based on type
+    let tableClassName = '';
+    let chairsLayout;
+    
+    if (table.type === 'square') {
+      tableClassName = 'w-12 h-12';
+      chairsLayout = (
+        <>
+          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-blue-200 border border-blue-300" />
+          <div className="absolute top-1/2 -right-4 transform -translate-y-1/2 w-4 h-4 rounded-full bg-blue-200 border border-blue-300" />
+          <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-blue-200 border border-blue-300" />
+          <div className="absolute top-1/2 -left-4 transform -translate-y-1/2 w-4 h-4 rounded-full bg-blue-200 border border-blue-300" />
+        </>
+      );
+    } else if (table.type === 'rectangle' && table.orientation === 'horizontal') {
+      tableClassName = 'w-24 h-12';
+      chairsLayout = (
+        <>
+          <div className="absolute -top-4 left-1/4 transform -translate-x-1/2 w-4 h-4 rounded-full bg-blue-200 border border-blue-300" />
+          <div className="absolute -top-4 left-3/4 transform -translate-x-1/2 w-4 h-4 rounded-full bg-blue-200 border border-blue-300" />
+          <div className="absolute top-1/2 -right-4 transform -translate-y-1/2 w-4 h-4 rounded-full bg-blue-200 border border-blue-300" />
+          <div className="absolute -bottom-4 left-1/4 transform -translate-x-1/2 w-4 h-4 rounded-full bg-blue-200 border border-blue-300" />
+          <div className="absolute -bottom-4 left-3/4 transform -translate-x-1/2 w-4 h-4 rounded-full bg-blue-200 border border-blue-300" />
+          <div className="absolute top-1/2 -left-4 transform -translate-y-1/2 w-4 h-4 rounded-full bg-blue-200 border border-blue-300" />
+        </>
+      );
+    } else {
+      tableClassName = 'w-16 h-16 rounded-full';
+      chairsLayout = (
+        <>
+          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-blue-200 border border-blue-300" />
+          <div className="absolute top-1/2 -right-4 transform -translate-y-1/2 w-4 h-4 rounded-full bg-blue-200 border border-blue-300" />
+          <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full bg-blue-200 border border-blue-300" />
+          <div className="absolute top-1/2 -left-4 transform -translate-y-1/2 w-4 h-4 rounded-full bg-blue-200 border border-blue-300" />
+        </>
+      );
+    }
+    
+    return (
+      <div 
+        key={table.id}
+        className={`absolute flex items-center justify-center transition-all duration-200 ${
+          table.position.row * 50}px ${table.position.col * 50}px`}
+        style={{ 
+          top: `${table.position.row * 50}px`, 
+          left: `${table.position.col * 50}px` 
+        }}
+      >
+        <div className="relative">
+          {chairsLayout}
+          <button
+            disabled={!table.available}
+            className={cn(
+              `${tableClassName} flex items-center justify-center rounded-lg transition-all duration-200 shadow-md`,
+              table.available 
+                ? isSelected 
+                  ? "bg-hotel-gold text-white scale-110" 
+                  : isHovered 
+                    ? "bg-hotel-blue bg-opacity-30 text-hotel-charcoal scale-105" 
+                    : "bg-white text-hotel-charcoal"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+            )}
+            onClick={() => table.available && setSelectedTable(table.id)}
+            onMouseEnter={() => setHoveredTable(table.id)}
+            onMouseLeave={() => setHoveredTable(null)}
+          >
+            <div className="flex flex-col items-center">
+              <span className="text-sm font-medium">{table.id}</span>
+              {(isSelected || isHovered) && (
+                <span className="text-xs mt-1 whitespace-nowrap">{table.seats} seats</span>
+              )}
+            </div>
+          </button>
+        </div>
+      </div>
+    );
   };
   
   const renderMenuItem = (
@@ -506,25 +629,43 @@ const BookingPage = () => {
                   <CircleDot className="w-4 h-4 mr-1" />
                   {language === 'en' ? 'Select a table' : language === 'fa' ? 'انتخاب میز' : 'اختر طاولة'}
                 </h4>
-                <div className="grid grid-cols-4 gap-2">
-                  {tables.map((table) => (
-                    <button
-                      key={table.id}
-                      disabled={!table.available}
-                      className={cn(
-                        "h-12 rounded-md flex items-center justify-center transition-all",
-                        table.available 
-                          ? selectedTable === table.id 
-                            ? "bg-hotel-gold text-white"
-                            : "bg-white hover:bg-hotel-blue hover:text-white" 
-                          : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                      )}
-                      onClick={() => table.available && setSelectedTable(table.id)}
-                    >
-                      {table.id}
-                    </button>
-                  ))}
+                
+                {/* Restaurant Map Layout */}
+                <div className="relative w-full h-[450px] bg-gray-100 rounded-lg overflow-hidden mb-2">
+                  {/* Restaurant boundary */}
+                  <div className="absolute inset-4 border-2 border-dashed border-gray-300 rounded-lg"></div>
+                  
+                  {/* Legend */}
+                  <div className="absolute top-4 right-4 bg-white p-2 rounded-lg shadow-sm text-xs z-10">
+                    <div className="flex items-center mb-1">
+                      <div className="w-3 h-3 rounded-sm bg-white border border-gray-300 mr-2"></div>
+                      <span>{language === 'en' ? 'Available' : language === 'fa' ? 'در دسترس' : 'متاح'}</span>
+                    </div>
+                    <div className="flex items-center mb-1">
+                      <div className="w-3 h-3 rounded-sm bg-gray-200 mr-2"></div>
+                      <span>{language === 'en' ? 'Unavailable' : language === 'fa' ? 'رزرو شده' : 'محجوز'}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 rounded-sm bg-hotel-gold mr-2"></div>
+                      <span>{language === 'en' ? 'Selected' : language === 'fa' ? 'انتخاب شده' : 'مختار'}</span>
+                    </div>
+                  </div>
+                  
+                  {/* Render tables */}
+                  {restaurantTables.map(table => renderTable(table))}
                 </div>
+                
+                {/* Selected table info */}
+                {selectedTable && (
+                  <div className="text-sm text-center p-2 bg-white rounded-lg shadow-sm mt-3 animate-fade-in">
+                    {language === 'en' 
+                      ? `Table ${selectedTable} selected (${restaurantTables.find(t => t.id === selectedTable)?.seats} seats)`
+                      : language === 'fa'
+                        ? `میز ${selectedTable} انتخاب شده (${restaurantTables.find(t => t.id === selectedTable)?.seats} صندلی)`
+                        : `تم اختيار الطاولة ${selectedTable} (${restaurantTables.find(t => t.id === selectedTable)?.seats} مقاعد)`
+                    }
+                  </div>
+                )}
               </div>
             </div>
           )}
