@@ -9,6 +9,17 @@ import FeatureCard from '@/components/FeatureCard';
 const MainMenu = () => {
   const { language, direction } = useLanguage();
 
+  // Function to get welcome message based on selected language
+  const getWelcomeMessage = () => {
+    if (language === 'fa') {
+      return 'خوش آمدید، آقای علی قاسمی';
+    } else if (language === 'ar') {
+      return 'مرحباً، السيد علي قاسمي';
+    } else {
+      return 'Welcome, Mr. Ali Ghasemi';
+    }
+  };
+
   return (
     <div 
       className={`min-h-screen p-6 ${direction === 'rtl' ? 'font-vazirmatn' : 'font-inter'} relative`}
@@ -28,13 +39,13 @@ const MainMenu = () => {
       <div className="relative z-10 min-h-screen">
         <LanguageToggle />
         
-        {/* Hotel logo and name */}
+        {/* Welcome message replacing hotel logo and name */}
         <div className="mt-10 mb-8 flex flex-col items-center animate-slide-down">
-          <div className="w-16 h-16 rounded-full bg-hotel-gold flex items-center justify-center mb-3 shadow-lg">
-            <span className="text-white text-2xl font-bold">LH</span>
+          <div className="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center mb-3 shadow-lg">
+            <span className="text-white text-2xl font-bold">AG</span>
           </div>
           <h1 className="text-2xl font-medium text-white drop-shadow-md">
-            {language === 'en' ? 'Luxury Hotel' : language === 'fa' ? 'هتل لوکس' : 'الفندق الفاخر'}
+            {getWelcomeMessage()}
           </h1>
         </div>
         
