@@ -25,20 +25,20 @@ const PassengerSection: React.FC<PassengerSectionProps> = ({
   
   return (
     <div className="p-4">
-      <h2 className="text-lg font-medium mb-3">
+      <h2 className="text-lg font-medium mb-3 text-gray-800">
         {getTranslation('passengerCount', language)}
       </h2>
       
       <div className="relative">
-        <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-          <span>
+        <div className="flex items-center justify-between p-3 border border-gray-300 rounded-lg bg-white">
+          <span className="text-gray-800">
             {passengerCount} {getTranslation(passengerCount === 1 ? 'passenger' : 'passengers', language)}
           </span>
           <div className="flex gap-2">
             <Button
               variant="outline"
               size="sm"
-              className="h-8 w-8 p-0 border-gray-200"
+              className="h-8 w-8 p-0 border-gray-300 bg-white text-gray-800"
               onClick={() => togglePassengerCount(false)}
               disabled={passengerCount <= 1}
             >
@@ -47,7 +47,7 @@ const PassengerSection: React.FC<PassengerSectionProps> = ({
             <Button
               variant="outline"
               size="sm"
-              className="h-8 w-8 p-0 border-gray-200"
+              className="h-8 w-8 p-0 border-gray-300 bg-white text-gray-800"
               onClick={() => togglePassengerCount(true)}
               disabled={passengerCount >= 10}
             >

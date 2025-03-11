@@ -120,20 +120,20 @@ const TimeSelectionSection: React.FC<TimeSelectionSectionProps> = ({
       {showCalendar && (
         <div className="mt-4 space-y-4 animate-fade-in">
           <div>
-            <h3 className="text-sm font-medium mb-2">
+            <h3 className="text-sm font-medium mb-2 text-gray-800">
               {getTranslation('selectDate', language)}
             </h3>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-between border-gray-200 text-gray-700"
+                  className="w-full justify-between border-gray-300 text-gray-800 bg-white"
                 >
                   {customDate ? format(customDate, 'PPP') : getTranslation('selectDate', language)}
-                  <Clock className="ml-2 h-4 w-4 text-gray-500" />
+                  <Clock className="ml-2 h-4 w-4 text-gray-600" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 bg-white border border-gray-300 shadow-lg">
                 <Calendar
                   mode="single"
                   selected={customDate}
@@ -147,25 +147,25 @@ const TimeSelectionSection: React.FC<TimeSelectionSectionProps> = ({
           </div>
           
           <div>
-            <h3 className="text-sm font-medium mb-2">
+            <h3 className="text-sm font-medium mb-2 text-gray-800">
               {getTranslation('selectTime', language)}
             </h3>
             <Popover open={showTimeSelect} onOpenChange={setShowTimeSelect}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-between border-gray-200 text-gray-700"
+                  className="w-full justify-between border-gray-300 text-gray-800 bg-white"
                 >
                   {customTime || getTranslation('selectTime', language)}
-                  <Clock className="ml-2 h-4 w-4 text-gray-500" />
+                  <Clock className="ml-2 h-4 w-4 text-gray-600" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-60 p-0 max-h-60 overflow-y-auto">
+              <PopoverContent className="w-60 p-0 max-h-60 overflow-y-auto bg-white border border-gray-300 shadow-lg">
                 <div className="py-1">
                   {timeSlots.map((time) => (
                     <button
                       key={time}
-                      className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                      className="w-full text-left px-4 py-2 text-sm text-gray-800 hover:bg-gray-100"
                       onClick={() => {
                         setCustomTime(time);
                         setShowTimeSelect(false);

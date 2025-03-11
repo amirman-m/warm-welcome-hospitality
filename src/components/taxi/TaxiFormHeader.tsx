@@ -8,7 +8,7 @@ const TaxiFormHeader: React.FC = () => {
   const { language } = useLanguage();
   
   return (
-    <div className="flex items-center justify-between mb-6 bg-white p-4 rounded-lg shadow-sm">
+    <div className="flex items-center justify-between mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
       <div>
         <h1 className="text-xl font-bold text-gray-800 mb-1">
           {getTranslation('requestTaxi', language)}
