@@ -16,5 +16,20 @@ export const informationTranslations: Record<string, Record<Language, string>> =
     en: 'Nearby Attractions',
     fa: 'جاذبه‌های نزدیک',
     ar: 'مناطق الجذب القريبة'
+  },
+  viewOnMap: {
+    en: 'View on Map',
+    fa: 'نمایش در نقشه',
+    ar: 'عرض على الخريطة'
+  },
+  visitWebsite: {
+    en: 'Visit Website',
+    fa: 'مشاهده وبسایت',
+    ar: 'زيارة الموقع'
+  },
+  distance: {
+    en: 'Distance',
+    fa: 'فاصله',
+    ar: 'المسافة'
   }
 };

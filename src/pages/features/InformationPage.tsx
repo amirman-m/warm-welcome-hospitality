@@ -6,6 +6,8 @@ import { getTranslation } from '@/utils/translations';
 import LanguageToggle from '@/components/LanguageToggle';
 import BackButton from '@/components/BackButton';
 import { cn } from '@/lib/utils';
+import AttractionItem from '@/components/AttractionItem';
+import { attractionsData } from '@/data/attractions';
 
 const InformationPage = () => {
   const { language, direction } = useLanguage();
@@ -21,11 +23,6 @@ const InformationPage = () => {
       en: `Enjoy our daily entertainment program featuring live music, cultural performances, and themed nights. Our lobby lounge hosts piano performances every evening from 7-10 PM. The rooftop bar features DJ sessions on Friday and Saturday nights. Weekly activities include wine tasting, cooking classes, and yoga sessions by the pool.`,
       fa: `از برنامه سرگرمی روزانه ما شامل موسیقی زنده، اجراهای فرهنگی و شب‌های موضوعی لذت ببرید. لابی لانژ ما هر شب از ساعت 7 تا 10 شب میزبان اجرای پیانو است. بار روی پشت بام در شب های جمعه و شنبه میزبان جلسات DJ است. فعالیت‌های هفتگی شامل چشیدن شراب، کلاس‌های آشپزی و جلسات یوگا در کنار استخر است.`,
       ar: `استمتع ببرنامجنا الترفيهي اليومي الذي يتضمن موسيقى حية وعروض ثقافية وليالي مواضيعية. يستضيف ردهة الاستقبال لدينا عروض البيانو كل مساء من الساعة 7-10 مساءً. يستضيف البار الموجود على السطح جلسات دي جي في ليالي الجمعة والسبت. تشمل الأنشطة الأسبوعية تذوق النبيذ ودروس الطبخ وجلسات اليوغا بجانب المسبح.`
-    },
-    attractions: {
-      en: `Discover the city's most captivating attractions, all within easy reach of our hotel. The Historic City Center is just a 10-minute walk away, featuring architectural wonders and charming cafes. The Museum District, with its 5 world-class museums, is a 15-minute taxi ride. For shopping enthusiasts, the Luxury Shopping Mall is directly connected to our hotel via an underground passage.`,
-      fa: `جذاب‌ترین جاذبه‌های شهر را کشف کنید که همگی به راحتی از هتل ما قابل دسترسی هستند. مرکز تاریخی شهر تنها 10 دقیقه پیاده‌روی فاصله دارد و دارای شگفتی‌های معماری و کافه‌های دلنشین است. منطقه موزه با 5 موزه در سطح جهانی، 15 دقیقه با تاکسی فاصله دارد. برای علاقه‌مندان به خرید، مرکز خرید لوکس از طریق یک گذرگاه زیرزمینی مستقیماً به هتل ما متصل است.`,
-      ar: `اكتشف أكثر مناطق الجذب الساحرة في المدينة، وكلها في متناول الفندق. يبعد وسط المدينة التاريخي مسافة 10 دقائق سيرًا على الأقدام فقط، ويضم عجائب معمارية ومقاهي ساحرة. تبعد منطقة المتحف، بمتاحفها الخمسة ذات المستوى العالمي، 15 دقيقة بسيارة أجرة. بالنسبة لعشاق التسوق، يتصل مول التسوق الفاخر مباشرة بفندقنا عبر ممر تحت الأرض.`
     }
   };
   
@@ -48,7 +45,7 @@ const InformationPage = () => {
         <LanguageToggle />
         <BackButton />
         
-        <div className="max-w-lg mx-auto animate-slide-up">
+        <div className="max-w-2xl mx-auto animate-slide-up">
           {/* Header */}
           <div className="flex flex-col items-center mb-8">
             <div className="w-16 h-16 rounded-full bg-hotel-gold flex items-center justify-center mb-3 shadow-lg">
@@ -128,9 +125,14 @@ const InformationPage = () => {
                 <h2 className="text-lg font-medium mb-4 text-hotel-charcoal">
                   {getTranslation('attractions', language)}
                 </h2>
-                <p className="text-hotel-charcoal">
-                  {information.attractions[language]}
-                </p>
+                <div className="mt-4 space-y-2">
+                  {attractionsData.map((attraction) => (
+                    <AttractionItem 
+                      key={attraction.id}
+                      {...attraction}
+                    />
+                  ))}
+                </div>
               </div>
             )}
           </div>
