@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -209,7 +210,7 @@
 .taxi-page-container select,
 .taxi-page-container div,
 .taxi-page-container p {
-  @apply font-inherit;
+  font-family: inherit; /* Changed from @apply font-inherit to direct CSS property */
 }
 
 /* Consistent popover and calendar styling */
