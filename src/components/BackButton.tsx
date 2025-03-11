@@ -18,11 +18,10 @@ const BackButton: React.FC = () => {
   return (
     <Button 
       onClick={handleBackClick}
-      className="flex items-center glass-effect px-4 py-2 rounded-full shadow-md hover:shadow-lg transition-all duration-300 absolute top-6 left-6 z-20"
+      className="flex items-center bg-white/80 text-hotel-charcoal px-4 py-2 rounded-full shadow-md hover:bg-hotel-gold hover:text-white transition-all duration-300 absolute top-6 left-6 z-20"
       aria-label="Back to menu"
-      variant="hotel"
-      size="sm"
       type="button"
+      size="sm"
     >
       {direction === 'ltr' ? (
         <ChevronLeft className="w-4 h-4 mr-1" />
