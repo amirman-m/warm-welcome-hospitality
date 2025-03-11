@@ -1,23 +1,64 @@
-
 import React, { useState, useEffect } from 'react';
-import { Calendar, Coffee, Utensils, Clock, CircleDot } from 'lucide-react';
+import { Calendar, Coffee, Utensils, Clock, CircleDot, GlassWater, Pizza, IceCream, Plus, Minus, ChevronDown, ChevronUp } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { getTranslation } from '@/utils/translations';
 import LanguageToggle from '@/components/LanguageToggle';
 import BackButton from '@/components/BackButton';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 type MealType = 'breakfast' | 'lunch' | 'dinner';
 type ActivityType = 'table' | 'tennis' | 'basketball' | 'coffee';
 
+interface MenuItem {
+  id: number;
+  name: string;
+  nameAr: string;
+  nameFa: string;
+  quantity: number;
+}
+
+const drinks: MenuItem[] = [
+  { id: 1, name: 'Water', nameAr: 'ماء', nameFa: 'آب', quantity: 0 },
+  { id: 2, name: 'Soft Drink', nameAr: 'مشروب غازي', nameFa: 'نوشابه', quantity: 0 },
+  { id: 3, name: 'Fresh Juice', nameAr: 'عصير طازج', nameFa: 'آبمیوه تازه', quantity: 0 },
+  { id: 4, name: 'Coffee', nameAr: 'قهوة', nameFa: 'قهوه', quantity: 0 },
+  { id: 5, name: 'Tea', nameAr: 'شاي', nameFa: 'چای', quantity: 0 },
+];
+
+const desserts: MenuItem[] = [
+  { id: 1, name: 'Ice Cream', nameAr: 'آيس كريم', nameFa: 'بستنی', quantity: 0 },
+  { id: 2, name: 'Cake', nameAr: 'كيك', nameFa: 'کیک', quantity: 0 },
+  { id: 3, name: 'Fruit Salad', nameAr: 'سلطة فواكه', nameFa: 'سالاد میوه', quantity: 0 },
+];
+
+const meals: MenuItem[] = [
+  { id: 1, name: 'Grilled Chicken', nameAr: 'دجاج مشوي', nameFa: 'مرغ کبابی', quantity: 0 },
+  { id: 2, name: 'Vegetarian Pasta', nameAr: 'باستا نباتية', nameFa: 'پاستا گیاهی', quantity: 0 },
+  { id: 3, name: 'Beef Steak', nameAr: 'ستيك لحم', nameFa: 'استیک گوشت', quantity: 0 },
+  { id: 4, name: 'Seafood Platter', nameAr: 'طبق مأكولات بحرية', nameFa: 'بشقاب غذای دریایی', quantity: 0 },
+];
+
 const BookingPage = () => {
   const { language, direction } = useLanguage();
-  const [activeBooking, setActiveBooking] = useState<'table' | 'tennis' | 'basketball' | 'coffee'>('table');
+  const [activeBooking, setActiveBooking] = useState<ActivityType>('table');
   const [selectedMeal, setSelectedMeal] = useState<MealType>('breakfast');
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedTable, setSelectedTable] = useState<number | null>(null);
   const [timeSlots, setTimeSlots] = useState<string[]>([]);
+  
+  // New state for meal selection
+  const [showMealSelection, setShowMealSelection] = useState(false);
+  const [selectedDrinks, setSelectedDrinks] = useState<MenuItem[]>(drinks);
+  const [selectedDesserts, setSelectedDesserts] = useState<MenuItem[]>(desserts);
+  const [selectedMeals, setSelectedMeals] = useState<MenuItem[]>(meals);
+  
+  // State for collapsible menu sections
+  const [drinksExpanded, setDrinksExpanded] = useState(true);
+  const [dessertsExpanded, setDessertsExpanded] = useState(true);
+  const [mealsExpanded, setMealsExpanded] = useState(true);
   
   const tables = Array.from({ length: 12 }, (_, i) => ({
     id: i + 1,
@@ -67,6 +108,12 @@ const BookingPage = () => {
       default:
         setTimeSlots([]);
     }
+    
+    // Reset meal selection when meal type changes
+    setShowMealSelection(false);
+    setSelectedDrinks(drinks.map(drink => ({ ...drink, quantity: 0 })));
+    setSelectedDesserts(desserts.map(dessert => ({ ...dessert, quantity: 0 })));
+    setSelectedMeals(meals.map(meal => ({ ...meal, quantity: 0 })));
   }, [selectedMeal]);
   
   const handleBook = () => {
@@ -92,16 +139,40 @@ const BookingPage = () => {
       successMessage = `Your ${getActivityName(activeBooking, 'en')} has been booked for ${selectedTime}`;
       if (activeBooking === 'table') {
         successMessage += ` (${getMealName(selectedMeal, 'en')}, Table ${selectedTable})`;
+        
+        // Add meal selection information if available
+        if (showMealSelection && (selectedMeal === 'lunch' || selectedMeal === 'dinner')) {
+          const totalItems = getTotalSelectedItems();
+          if (totalItems > 0) {
+            successMessage += ` with ${totalItems} pre-selected items`;
+          }
+        }
       }
     } else if (language === 'fa') {
       successMessage = `${getActivityName(activeBooking, 'fa')} شما برای ساعت ${selectedTime} رزرو شد`;
       if (activeBooking === 'table') {
         successMessage += ` (${getMealName(selectedMeal, 'fa')}، میز ${selectedTable})`;
+        
+        // Add meal selection information if available
+        if (showMealSelection && (selectedMeal === 'lunch' || selectedMeal === 'dinner')) {
+          const totalItems = getTotalSelectedItems();
+          if (totalItems > 0) {
+            successMessage += ` با ${totalItems} مورد از پیش انتخاب شده`;
+          }
+        }
       }
     } else {
       successMessage = `تم حجز ${getActivityName(activeBooking, 'ar')} الخاص بك للساعة ${selectedTime}`;
       if (activeBooking === 'table') {
         successMessage += ` (${getMealName(selectedMeal, 'ar')}، طاولة ${selectedTable})`;
+        
+        // Add meal selection information if available
+        if (showMealSelection && (selectedMeal === 'lunch' || selectedMeal === 'dinner')) {
+          const totalItems = getTotalSelectedItems();
+          if (totalItems > 0) {
+            successMessage += ` مع ${totalItems} عناصر محددة مسبقًا`;
+          }
+        }
       }
     }
     
@@ -112,6 +183,64 @@ const BookingPage = () => {
     // Reset selection
     setSelectedTable(null);
     setSelectedTime('');
+    setShowMealSelection(false);
+    setSelectedDrinks(drinks.map(drink => ({ ...drink, quantity: 0 })));
+    setSelectedDesserts(desserts.map(dessert => ({ ...dessert, quantity: 0 })));
+    setSelectedMeals(meals.map(meal => ({ ...meal, quantity: 0 })));
+  };
+  
+  const getTotalSelectedItems = () => {
+    const drinkCount = selectedDrinks.reduce((total, item) => total + item.quantity, 0);
+    const dessertCount = selectedDesserts.reduce((total, item) => total + item.quantity, 0);
+    const mealCount = selectedMeals.reduce((total, item) => total + item.quantity, 0);
+    return drinkCount + dessertCount + mealCount;
+  };
+  
+  const updateItemQuantity = (
+    itemId: number, 
+    operation: 'increment' | 'decrement', 
+    type: 'drinks' | 'desserts' | 'meals'
+  ) => {
+    if (type === 'drinks') {
+      setSelectedDrinks(drinks => 
+        drinks.map(drink => 
+          drink.id === itemId 
+            ? { 
+                ...drink, 
+                quantity: operation === 'increment' 
+                  ? drink.quantity + 1 
+                  : Math.max(0, drink.quantity - 1) 
+              } 
+            : drink
+        )
+      );
+    } else if (type === 'desserts') {
+      setSelectedDesserts(desserts => 
+        desserts.map(dessert => 
+          dessert.id === itemId 
+            ? { 
+                ...dessert, 
+                quantity: operation === 'increment' 
+                  ? dessert.quantity + 1 
+                  : Math.max(0, dessert.quantity - 1) 
+              } 
+            : dessert
+        )
+      );
+    } else if (type === 'meals') {
+      setSelectedMeals(meals => 
+        meals.map(meal => 
+          meal.id === itemId 
+            ? { 
+                ...meal, 
+                quantity: operation === 'increment' 
+                  ? meal.quantity + 1 
+                  : Math.max(0, meal.quantity - 1) 
+              } 
+            : meal
+        )
+      );
+    }
   };
   
   const getMealName = (meal: MealType, lang: 'en' | 'fa' | 'ar') => {
@@ -140,6 +269,131 @@ const BookingPage = () => {
       return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
     }
     return time;
+  };
+  
+  const renderMenuItem = (
+    item: MenuItem, 
+    type: 'drinks' | 'desserts' | 'meals'
+  ) => {
+    const itemName = language === 'en' ? item.name 
+                    : language === 'fa' ? item.nameFa 
+                    : item.nameAr;
+    
+    return (
+      <div key={item.id} className="flex items-center justify-between py-2 border-b border-hotel-cream">
+        <span className="flex-1">{itemName}</span>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8 rounded-full"
+            onClick={() => updateItemQuantity(item.id, 'decrement', type)}
+          >
+            <Minus className="h-4 w-4" />
+          </Button>
+          <span className="w-8 text-center">{item.quantity}</span>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8 rounded-full"
+            onClick={() => updateItemQuantity(item.id, 'increment', type)}
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    );
+  };
+  
+  // Render meal selection menu for lunch and dinner
+  const renderMealSelectionMenu = () => {
+    if (!showMealSelection || (selectedMeal !== 'lunch' && selectedMeal !== 'dinner')) {
+      return null;
+    }
+    
+    const drinksSectionTitle = language === 'en' ? 'Drinks' 
+                             : language === 'fa' ? 'نوشیدنی‌ها' 
+                             : 'المشروبات';
+    
+    const dessertsSectionTitle = language === 'en' ? 'Desserts' 
+                               : language === 'fa' ? 'دسرها' 
+                               : 'الحلويات';
+    
+    const mealsSectionTitle = language === 'en' ? 'Meals' 
+                            : language === 'fa' ? 'غذاها' 
+                            : 'الوجبات';
+    
+    return (
+      <div className="mt-4 bg-hotel-cream p-4 rounded-lg animate-fade-in">
+        <h4 className="text-sm font-medium mb-3">
+          {language === 'en' ? 'Pre-select your meal (optional)' 
+          : language === 'fa' ? 'پیش‌انتخاب غذا (اختیاری)' 
+          : 'اختيار وجبتك مسبقًا (اختياري)'}
+        </h4>
+        
+        <ScrollArea className="h-64 pr-4">
+          {/* Drinks section */}
+          <div className="mb-4">
+            <button 
+              onClick={() => setDrinksExpanded(!drinksExpanded)}
+              className="flex items-center justify-between w-full mb-2 font-medium"
+            >
+              <div className="flex items-center">
+                <GlassWater className="w-4 h-4 mr-2" />
+                {drinksSectionTitle}
+              </div>
+              {drinksExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+            
+            {drinksExpanded && (
+              <div className="pl-6">
+                {selectedDrinks.map(drink => renderMenuItem(drink, 'drinks'))}
+              </div>
+            )}
+          </div>
+          
+          {/* Desserts section */}
+          <div className="mb-4">
+            <button 
+              onClick={() => setDessertsExpanded(!dessertsExpanded)}
+              className="flex items-center justify-between w-full mb-2 font-medium"
+            >
+              <div className="flex items-center">
+                <IceCream className="w-4 h-4 mr-2" />
+                {dessertsSectionTitle}
+              </div>
+              {dessertsExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+            
+            {dessertsExpanded && (
+              <div className="pl-6">
+                {selectedDesserts.map(dessert => renderMenuItem(dessert, 'desserts'))}
+              </div>
+            )}
+          </div>
+          
+          {/* Meals section */}
+          <div className="mb-4">
+            <button 
+              onClick={() => setMealsExpanded(!mealsExpanded)}
+              className="flex items-center justify-between w-full mb-2 font-medium"
+            >
+              <div className="flex items-center">
+                <Pizza className="w-4 h-4 mr-2" />
+                {mealsSectionTitle}
+              </div>
+              {mealsExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+            
+            {mealsExpanded && (
+              <div className="pl-6">
+                {selectedMeals.map(meal => renderMenuItem(meal, 'meals'))}
+              </div>
+            )}
+          </div>
+        </ScrollArea>
+      </div>
+    );
   };
   
   return (
@@ -298,6 +552,35 @@ const BookingPage = () => {
               ))}
             </div>
           </div>
+          
+          {/* Meal pre-selection toggle button for lunch and dinner */}
+          {activeBooking === 'table' && 
+           selectedTime && 
+           (selectedMeal === 'lunch' || selectedMeal === 'dinner') && (
+            <div className="mb-4 animate-fade-in">
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full",
+                  showMealSelection ? "bg-hotel-cream" : ""
+                )}
+                onClick={() => setShowMealSelection(!showMealSelection)}
+              >
+                {showMealSelection ? 
+                  (language === 'en' ? 'Hide meal selection' 
+                  : language === 'fa' ? 'مخفی کردن انتخاب غذا' 
+                  : 'إخفاء اختيار الوجبة') 
+                  : 
+                  (language === 'en' ? 'Pre-select your meal (optional)' 
+                  : language === 'fa' ? 'پیش‌انتخاب غذا (اختیاری)' 
+                  : 'اختيار وجبتك مسبقًا (اختياري)')
+                }
+              </Button>
+            </div>
+          )}
+          
+          {/* Meal selection menu */}
+          {renderMealSelectionMenu()}
           
           {/* Book button */}
           <button
