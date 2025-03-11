@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Calendar, Coffee, Utensils, Clock, CircleDot, GlassWater, Pizza, IceCream, Plus, Minus, ChevronDown, ChevronUp } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
@@ -320,7 +319,7 @@ const BookingPage = () => {
     let tableClassName = '';
     let chairsLayout;
     
-    if (table.type === 'square') {
+    if (table.position.type === 'square') {
       tableClassName = 'w-12 h-12';
       chairsLayout = (
         <>
@@ -330,7 +329,7 @@ const BookingPage = () => {
           <div className="absolute top-1/2 -left-4 transform -translate-y-1/2 w-4 h-4 rounded-full bg-blue-200 border border-blue-300" />
         </>
       );
-    } else if (table.type === 'rectangle' && table.orientation === 'horizontal') {
+    } else if (table.position.type === 'rectangle' && table.position.orientation === 'horizontal') {
       tableClassName = 'w-24 h-12';
       chairsLayout = (
         <>
@@ -677,63 +676,4 @@ const BookingPage = () => {
               {language === 'en' ? 'Select time' : language === 'fa' ? 'انتخاب زمان' : 'حدد الوقت'}
             </h3>
             <div className="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto">
-              {timeSlots.map((time) => (
-                <button
-                  key={time}
-                  className={cn(
-                    "py-2 px-1 rounded-md text-sm transition-all",
-                    selectedTime === time 
-                      ? "bg-hotel-gold text-white" 
-                      : "bg-white hover:bg-hotel-blue hover:text-white"
-                  )}
-                  onClick={() => setSelectedTime(time)}
-                >
-                  {formatTimeSlot(time)}
-                </button>
-              ))}
-            </div>
-          </div>
-          
-          {/* Meal pre-selection toggle button for lunch and dinner */}
-          {activeBooking === 'table' && 
-           selectedTime && 
-           (selectedMeal === 'lunch' || selectedMeal === 'dinner') && (
-            <div className="mb-4 animate-fade-in">
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full",
-                  showMealSelection ? "bg-hotel-cream" : ""
-                )}
-                onClick={() => setShowMealSelection(!showMealSelection)}
-              >
-                {showMealSelection ? 
-                  (language === 'en' ? 'Hide meal selection' 
-                  : language === 'fa' ? 'مخفی کردن انتخاب غذا' 
-                  : 'إخفاء اختيار الوجبة') 
-                  : 
-                  (language === 'en' ? 'Pre-select your meal (optional)' 
-                  : language === 'fa' ? 'پیش‌انتخاب غذا (اختیاری)' 
-                  : 'اختيار وجبتك مسبقًا (اختياري)')
-                }
-              </Button>
-            </div>
-          )}
-          
-          {/* Meal selection menu */}
-          {renderMealSelectionMenu()}
-          
-          {/* Book button */}
-          <button
-            className="w-full bg-hotel-gold text-white py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all active:scale-95"
-            onClick={handleBook}
-          >
-            {language === 'en' ? 'Book Now' : language === 'fa' ? 'رزرو کن' : 'احجز الآن'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default BookingPage;
+              {timeSlots.map((
