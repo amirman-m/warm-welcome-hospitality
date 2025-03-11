@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { getTranslation } from '@/utils/translations';
@@ -50,7 +51,7 @@ const BookingPage = () => {
   };
 
   const handleBook = () => {
-    handleBooking(
+    return handleBooking(
       language,
       activeBooking,
       selectedDate,
@@ -136,7 +137,7 @@ const BookingPage = () => {
           />
           
           {/* Book button */}
-          <BookNowButton onClick={handleBook} />
+          <BookNowButton onClick={handleBook} bookingType={activeBooking} />
         </div>
       </div>
     </div>
