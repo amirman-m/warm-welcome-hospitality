@@ -62,6 +62,8 @@ export type TranslationKey =
   | 'lunch'
   | 'dinner'
   | 'selectDate'
+  | 'selectTime'
+  | 'selectTable'
   
   // Taxi
   | 'destination'
