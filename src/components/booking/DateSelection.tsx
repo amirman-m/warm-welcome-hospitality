@@ -19,6 +19,7 @@ const DateSelection: React.FC<DateSelectionProps> = ({
   setSelectedDate
 }) => {
   const { language } = useLanguage();
+  const [open, setOpen] = React.useState(false);
   
   // Format date based on language
   const formatDate = (date: Date) => {
@@ -33,6 +34,11 @@ const DateSelection: React.FC<DateSelectionProps> = ({
     }
   };
 
+  const handleSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+    setOpen(false); // Close the popover after selection
+  };
+
   return (
     <div className="mb-6 animate-fade-in">
       <h3 className="font-medium mb-3 flex items-center">
@@ -40,7 +46,7 @@ const DateSelection: React.FC<DateSelectionProps> = ({
         {getTranslation('selectDate', language)}
       </h3>
       
-      <Popover>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
@@ -57,14 +63,19 @@ const DateSelection: React.FC<DateSelectionProps> = ({
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
+        <PopoverContent 
+          className="w-auto p-0" 
+          align="start"
+          sideOffset={4}
+          side="bottom"
+        >
           <Calendar
             mode="single"
             selected={selectedDate}
-            onSelect={setSelectedDate}
+            onSelect={handleSelect}
             initialFocus
             disabled={(date) => date < new Date()}
-            className={cn("p-3 pointer-events-auto")}
+            className="p-3 z-50 bg-white"
           />
         </PopoverContent>
       </Popover>
