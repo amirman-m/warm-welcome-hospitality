@@ -1,20 +1,9 @@
 
-import React, { useState } from 'react';
-import { CircleDot } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { CircleDot, ZoomIn, ZoomOut, Move } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/context/LanguageContext';
-
-interface TableInfo {
-  id: number;
-  available: boolean;
-  seats: number;
-  position: {
-    row: number;
-    col: number;
-    type: 'square' | 'rectangle' | 'circle';
-    orientation?: 'vertical' | 'horizontal';
-  };
-}
+import { TableInfo, MapViewState } from '@/types/booking';
 
 interface TableSelectionProps {
   tables: TableInfo[];
@@ -29,6 +18,103 @@ const TableSelection: React.FC<TableSelectionProps> = ({
 }) => {
   const { language } = useLanguage();
   const [hoveredTable, setHoveredTable] = useState<number | null>(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  
+  // Map view state for panning and zooming
+  const [mapView, setMapView] = useState<MapViewState>({
+    scale: 1,
+    translateX: 0,
+    translateY: 0,
+    isDragging: false,
+    startX: 0,
+    startY: 0
+  });
+
+  // Handle map panning
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setMapView(prev => ({
+      ...prev,
+      isDragging: true,
+      startX: e.clientX - prev.translateX,
+      startY: e.clientY - prev.translateY
+    }));
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!mapView.isDragging) return;
+    
+    const newTranslateX = e.clientX - mapView.startX;
+    const newTranslateY = e.clientY - mapView.startY;
+    
+    setMapView(prev => ({
+      ...prev,
+      translateX: newTranslateX,
+      translateY: newTranslateY
+    }));
+  };
+
+  const handleMouseUp = () => {
+    setMapView(prev => ({
+      ...prev,
+      isDragging: false
+    }));
+  };
+
+  // Handle zoom in and out
+  const handleZoomIn = () => {
+    setMapView(prev => ({
+      ...prev,
+      scale: Math.min(prev.scale + 0.2, 2.5)
+    }));
+  };
+
+  const handleZoomOut = () => {
+    setMapView(prev => ({
+      ...prev,
+      scale: Math.max(prev.scale - 0.2, 0.5)
+    }));
+  };
+
+  // Reset map view
+  const resetMapView = () => {
+    setMapView({
+      scale: 1,
+      translateX: 0,
+      translateY: 0,
+      isDragging: false,
+      startX: 0,
+      startY: 0
+    });
+  };
+
+  // Add wheel event listener for zooming
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (!mapContainerRef.current?.contains(e.target as Node)) return;
+      e.preventDefault();
+      
+      const delta = -Math.sign(e.deltaY) * 0.1;
+      const newScale = Math.max(0.5, Math.min(2.5, mapView.scale + delta));
+      
+      setMapView(prev => ({
+        ...prev,
+        scale: newScale
+      }));
+    };
+    
+    const mapContainer = mapContainerRef.current;
+    if (mapContainer) {
+      mapContainer.addEventListener('wheel', handleWheel, { passive: false });
+    }
+    
+    return () => {
+      if (mapContainer) {
+        mapContainer.removeEventListener('wheel', handleWheel);
+      }
+    };
+  }, [mapView.scale]);
 
   // Render a table in the restaurant map
   const renderTable = (table: TableInfo) => {
@@ -76,7 +162,7 @@ const TableSelection: React.FC<TableSelectionProps> = ({
     return (
       <div 
         key={table.id}
-        className={`absolute flex items-center justify-center transition-all duration-200`}
+        className="absolute flex items-center justify-center transition-all duration-200"
         style={{ 
           top: `${table.position.row * 50}px`, 
           left: `${table.position.col * 50}px` 
@@ -112,6 +198,12 @@ const TableSelection: React.FC<TableSelectionProps> = ({
     );
   };
 
+  const mapStyle = {
+    transform: `scale(${mapView.scale}) translate(${mapView.translateX}px, ${mapView.translateY}px)`,
+    transformOrigin: 'center',
+    cursor: mapView.isDragging ? 'grabbing' : 'grab'
+  };
+
   return (
     <div className="bg-hotel-cream p-4 rounded-lg mb-4">
       <h4 className="text-sm font-medium mb-3 flex items-center">
@@ -119,12 +211,54 @@ const TableSelection: React.FC<TableSelectionProps> = ({
         {language === 'en' ? 'Select a table' : language === 'fa' ? 'انتخاب میز' : 'اختر طاولة'}
       </h4>
       
+      {/* Restaurant Map Controls */}
+      <div className="flex justify-end gap-2 mb-2">
+        <button 
+          onClick={handleZoomIn}
+          className="p-1 bg-white rounded-md shadow-sm hover:bg-gray-100"
+          aria-label="Zoom in"
+        >
+          <ZoomIn size={16} />
+        </button>
+        <button 
+          onClick={handleZoomOut}
+          className="p-1 bg-white rounded-md shadow-sm hover:bg-gray-100"
+          aria-label="Zoom out"
+        >
+          <ZoomOut size={16} />
+        </button>
+        <button 
+          onClick={resetMapView}
+          className="p-1 bg-white rounded-md shadow-sm hover:bg-gray-100"
+          aria-label="Reset view"
+        >
+          <Move size={16} />
+        </button>
+      </div>
+      
       {/* Restaurant Map Layout */}
-      <div className="relative w-full h-[450px] bg-gray-100 rounded-lg overflow-hidden mb-2">
-        {/* Restaurant boundary */}
-        <div className="absolute inset-4 border-2 border-dashed border-gray-300 rounded-lg"></div>
+      <div 
+        ref={mapContainerRef}
+        className="relative w-full h-[450px] bg-gray-100 rounded-lg overflow-hidden mb-2"
+      >
+        {/* Draggable map content */}
+        <div
+          ref={mapRef}
+          className="absolute inset-0 w-full h-full transition-transform"
+          style={mapStyle}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        >
+          {/* Restaurant boundary */}
+          <div className="absolute inset-4 border-2 border-dashed border-gray-300 rounded-lg"></div>
+          
+          {/* Render tables */}
+          {tables.map(table => renderTable(table))}
+        </div>
         
-        {/* Legend */}
+        {/* Legend (fixed position) */}
         <div className="absolute top-4 right-4 bg-white p-2 rounded-lg shadow-sm text-xs z-10">
           <div className="flex items-center mb-1">
             <div className="w-3 h-3 rounded-sm bg-white border border-gray-300 mr-2"></div>
@@ -139,9 +273,6 @@ const TableSelection: React.FC<TableSelectionProps> = ({
             <span>{language === 'en' ? 'Selected' : language === 'fa' ? 'انتخاب شده' : 'مختار'}</span>
           </div>
         </div>
-        
-        {/* Render tables */}
-        {tables.map(table => renderTable(table))}
       </div>
       
       {/* Selected table info */}

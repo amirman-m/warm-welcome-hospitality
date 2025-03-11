@@ -21,3 +21,12 @@ export interface TableInfo {
     orientation?: 'vertical' | 'horizontal';
   };
 }
+
+export interface MapViewState {
+  scale: number;
+  translateX: number;
+  translateY: number;
+  isDragging: boolean;
+  startX: number;
+  startY: number;
+}
