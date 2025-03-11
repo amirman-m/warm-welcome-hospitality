@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useLanguage } from '@/context/LanguageContext';
+import { getTranslation } from '@/utils/translations';
 
 interface DateSelectionProps {
   selectedDate: Date | undefined;
@@ -36,7 +37,7 @@ const DateSelection: React.FC<DateSelectionProps> = ({
     <div className="mb-6 animate-fade-in">
       <h3 className="font-medium mb-3 flex items-center">
         <CalendarIcon className="w-4 h-4 mr-2" />
-        {language === 'en' ? 'Select date' : language === 'fa' ? 'انتخاب تاریخ' : 'حدد التاريخ'}
+        {getTranslation('selectDate', language)}
       </h3>
       
       <Popover>
@@ -52,13 +53,7 @@ const DateSelection: React.FC<DateSelectionProps> = ({
             {selectedDate ? (
               formatDate(selectedDate)
             ) : (
-              <span>
-                {language === 'en' 
-                  ? 'Select a date' 
-                  : language === 'fa' 
-                  ? 'انتخاب تاریخ' 
-                  : 'حدد التاريخ'}
-              </span>
+              <span>{getTranslation('selectDate', language)}</span>
             )}
           </Button>
         </PopoverTrigger>

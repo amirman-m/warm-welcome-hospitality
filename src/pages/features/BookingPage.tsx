@@ -38,7 +38,7 @@ const BookingPage = () => {
   const [timeSlots, setTimeSlots] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   
-  // New state for meal selection
+  // Meal selection state
   const [showMealSelection, setShowMealSelection] = useState(false);
   const [selectedDrinks, setSelectedDrinks] = useState<MenuItem[]>(drinks);
   const [selectedDesserts, setSelectedDesserts] = useState<MenuItem[]>(desserts);
@@ -246,7 +246,7 @@ const BookingPage = () => {
         
         {/* Booking form */}
         <div className="glass-effect rounded-xl p-6 text-start">
-          {/* Restaurant booking specific */}
+          {/* Restaurant booking specific - Meal type selector */}
           {activeBooking === 'table' && (
             <div className="mb-6 animate-fade-in">
               <h3 className="font-medium mb-3">{getTranslation('bookTable', language)}</h3>
@@ -255,31 +255,35 @@ const BookingPage = () => {
                 selectedMeal={selectedMeal} 
                 setSelectedMeal={setSelectedMeal} 
               />
-              
-              <TableSelection 
-                tables={restaurantTables} 
-                selectedTable={selectedTable} 
-                setSelectedTable={setSelectedTable} 
-              />
             </div>
           )}
           
-          {/* Date selection for all booking types */}
+          {/* Step 1: Date selection for all booking types */}
           <DateSelection
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
           />
           
-          {/* Time selection for all booking types */}
+          {/* Step 2: Time selection for all booking types */}
           <TimeSelection 
             timeSlots={timeSlots} 
             selectedTime={selectedTime} 
             setSelectedTime={setSelectedTime} 
           />
           
+          {/* Step 3: Table selection for restaurant bookings */}
+          {activeBooking === 'table' && selectedTime && (
+            <TableSelection 
+              tables={restaurantTables} 
+              selectedTable={selectedTable} 
+              setSelectedTable={setSelectedTable} 
+            />
+          )}
+          
           {/* Meal pre-selection toggle button for lunch and dinner */}
           {activeBooking === 'table' && 
            selectedTime && 
+           selectedTable &&
            (selectedMeal === 'lunch' || selectedMeal === 'dinner') && (
             <div className="mb-4 animate-fade-in">
               <Button

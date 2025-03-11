@@ -3,6 +3,7 @@ import React from 'react';
 import { Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/context/LanguageContext';
+import { getTranslation } from '@/utils/translations';
 
 interface TimeSelectionProps {
   timeSlots: string[];
@@ -32,7 +33,7 @@ const TimeSelection: React.FC<TimeSelectionProps> = ({
     <div className="mb-6 animate-fade-in">
       <h3 className="font-medium mb-3 flex items-center">
         <Clock className="w-4 h-4 mr-2" />
-        {language === 'en' ? 'Select time' : language === 'fa' ? 'انتخاب زمان' : 'حدد الوقت'}
+        {getTranslation('selectTime', language)}
       </h3>
       <div className="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto">
         {timeSlots.map((time) => (

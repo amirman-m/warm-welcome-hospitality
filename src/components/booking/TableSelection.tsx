@@ -4,6 +4,7 @@ import { CircleDot, ZoomIn, ZoomOut, Move } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/context/LanguageContext';
 import { TableInfo, MapViewState } from '@/types/booking';
+import { getTranslation } from '@/utils/translations';
 
 interface TableSelectionProps {
   tables: TableInfo[];
@@ -208,7 +209,7 @@ const TableSelection: React.FC<TableSelectionProps> = ({
     <div className="bg-hotel-cream p-4 rounded-lg mb-4">
       <h4 className="text-sm font-medium mb-3 flex items-center">
         <CircleDot className="w-4 h-4 mr-1" />
-        {language === 'en' ? 'Select a table' : language === 'fa' ? 'انتخاب میز' : 'اختر طاولة'}
+        {getTranslation('selectTable', language)}
       </h4>
       
       {/* Restaurant Map Controls */}
