@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Car, MapPin, Clock, Users, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
+import { Car, MapPin, Clock, Users, ChevronDown, ChevronUp } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { getTranslation } from '@/utils/translations';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -47,23 +47,23 @@ const TaxiPage = () => {
   
   const popularDestinations = [
     {
-      key: 'airport',
+      key: 'airport' as const,
       icon: <MapPin className="w-4 h-4" />
     },
     {
-      key: 'cityCenter',
+      key: 'cityCenter' as const,
       icon: <MapPin className="w-4 h-4" />
     },
     {
-      key: 'mall',
+      key: 'mall' as const,
       icon: <MapPin className="w-4 h-4" />
     },
     {
-      key: 'beach',
+      key: 'beach' as const,
       icon: <MapPin className="w-4 h-4" />
     },
     {
-      key: 'trainStation',
+      key: 'trainStation' as const,
       icon: <MapPin className="w-4 h-4" />
     }
   ];
@@ -94,7 +94,7 @@ const TaxiPage = () => {
     setSelectedPlaceId(placeId);
   };
   
-  const handleSelectPopularDestination = (destKey: string) => {
+  const handleSelectPopularDestination = (destKey: 'airport' | 'cityCenter' | 'mall' | 'beach' | 'trainStation') => {
     const dest = getTranslation(destKey, language);
     setDestination(dest);
     setSelectedDestination(dest);
@@ -349,7 +349,7 @@ const TaxiPage = () => {
                           className="w-full justify-between border-gray-200 text-gray-700"
                         >
                           {customDate ? format(customDate, 'PPP') : getTranslation('selectDate', language)}
-                          <Calendar className="ml-2 h-4 w-4 text-gray-500" />
+                          <Clock className="ml-2 h-4 w-4 text-gray-500" />
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
