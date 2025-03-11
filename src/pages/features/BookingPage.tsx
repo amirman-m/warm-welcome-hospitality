@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, Coffee, Utensils, Clock, CircleDot } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { getTranslation } from '@/utils/translations';
@@ -17,17 +17,57 @@ const BookingPage = () => {
   const [selectedMeal, setSelectedMeal] = useState<MealType>('breakfast');
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedTable, setSelectedTable] = useState<number | null>(null);
+  const [timeSlots, setTimeSlots] = useState<string[]>([]);
   
   const tables = Array.from({ length: 12 }, (_, i) => ({
     id: i + 1,
     available: ![2, 5, 8, 11].includes(i + 1), // Some tables are unavailable
   }));
   
-  const timeSlots = [
-    '08:00', '09:00', '10:00', '11:00', '12:00', 
-    '13:00', '14:00', '15:00', '16:00', '17:00',
-    '18:00', '19:00', '20:00', '21:00'
-  ];
+  // Update time slots when meal type changes
+  useEffect(() => {
+    const generateTimeSlots = (start: string, end: string) => {
+      const slots: string[] = [];
+      const [startHour, startMinute] = start.split(':').map(Number);
+      const [endHour, endMinute] = end.split(':').map(Number);
+      
+      let currentHour = startHour;
+      let currentMinute = startMinute;
+      
+      while (
+        currentHour < endHour || 
+        (currentHour === endHour && currentMinute <= endMinute)
+      ) {
+        slots.push(`${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`);
+        
+        currentMinute += 15;
+        if (currentMinute >= 60) {
+          currentHour += 1;
+          currentMinute = 0;
+        }
+      }
+      
+      return slots;
+    };
+    
+    // Reset selected time when meal type changes
+    setSelectedTime('');
+    
+    // Set time slots based on meal type
+    switch (selectedMeal) {
+      case 'breakfast':
+        setTimeSlots(generateTimeSlots('06:00', '10:00'));
+        break;
+      case 'lunch':
+        setTimeSlots(generateTimeSlots('12:00', '15:00'));
+        break;
+      case 'dinner':
+        setTimeSlots(generateTimeSlots('18:30', '21:00'));
+        break;
+      default:
+        setTimeSlots([]);
+    }
+  }, [selectedMeal]);
   
   const handleBook = () => {
     if (!selectedTime) {
@@ -89,6 +129,17 @@ const BookingPage = () => {
       case 'coffee':
         return getTranslation('coffee', lang);
     }
+  };
+  
+  const formatTimeSlot = (time: string) => {
+    // Format the time to include AM/PM for English users
+    if (language === 'en') {
+      const [hours, minutes] = time.split(':').map(Number);
+      const period = hours >= 12 ? 'PM' : 'AM';
+      const displayHours = hours % 12 || 12;
+      return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+    }
+    return time;
   };
   
   return (
@@ -230,7 +281,7 @@ const BookingPage = () => {
               <Clock className="w-4 h-4 mr-2" />
               {language === 'en' ? 'Select time' : language === 'fa' ? 'انتخاب زمان' : 'حدد الوقت'}
             </h3>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto">
               {timeSlots.map((time) => (
                 <button
                   key={time}
@@ -242,7 +293,7 @@ const BookingPage = () => {
                   )}
                   onClick={() => setSelectedTime(time)}
                 >
-                  {time}
+                  {formatTimeSlot(time)}
                 </button>
               ))}
             </div>
