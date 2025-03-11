@@ -36,5 +36,10 @@ export const bookingTranslations: Record<string, Record<Language, string>> = {
     en: 'Coffee Shop',
     fa: 'کافی شاپ',
     ar: 'مقهى'
+  },
+  selectDate: {
+    en: 'Select date',
+    fa: 'انتخاب تاریخ',
+    ar: 'حدد التاريخ'
   }
 };

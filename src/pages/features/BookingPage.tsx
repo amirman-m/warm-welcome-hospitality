@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import { Calendar } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { getTranslation } from '@/utils/translations';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -19,6 +18,7 @@ import MealTypeSelector from '@/components/booking/MealTypeSelector';
 import MealSelection from '@/components/booking/MealSelection';
 import BookingTabs from '@/components/booking/BookingTabs';
 import BookingHeader from '@/components/booking/BookingHeader';
+import DateSelection from '@/components/booking/DateSelection';
 
 // Data
 import { 
@@ -36,6 +36,7 @@ const BookingPage = () => {
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedTable, setSelectedTable] = useState<number | null>(null);
   const [timeSlots, setTimeSlots] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   
   // New state for meal selection
   const [showMealSelection, setShowMealSelection] = useState(false);
@@ -71,6 +72,14 @@ const BookingPage = () => {
   }, [selectedMeal]);
   
   const handleBook = () => {
+    if (!selectedDate) {
+      toast({
+        title: language === 'en' ? 'Select a date' : language === 'fa' ? 'تاریخ را انتخاب کنید' : 'حدد تاريخًا',
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!selectedTime) {
       toast({
         title: language === 'en' ? 'Select a time' : language === 'fa' ? 'زمان را انتخاب کنید' : 'حدد وقتًا',
@@ -88,9 +97,12 @@ const BookingPage = () => {
     }
     
     let successMessage = '';
+    const dateString = selectedDate.toLocaleDateString(
+      language === 'en' ? 'en-US' : language === 'fa' ? 'fa-IR' : 'ar-SA'
+    );
     
     if (language === 'en') {
-      successMessage = `Your ${getActivityName(activeBooking, 'en')} has been booked for ${selectedTime}`;
+      successMessage = `Your ${getActivityName(activeBooking, 'en')} has been booked for ${dateString} at ${selectedTime}`;
       if (activeBooking === 'table') {
         const tableInfo = restaurantTables.find(t => t.id === selectedTable);
         successMessage += ` (${getMealName(selectedMeal, 'en')}, Table ${selectedTable} - ${tableInfo?.seats} seats)`;
@@ -104,7 +116,7 @@ const BookingPage = () => {
         }
       }
     } else if (language === 'fa') {
-      successMessage = `${getActivityName(activeBooking, 'fa')} شما برای ساعت ${selectedTime} رزرو شد`;
+      successMessage = `${getActivityName(activeBooking, 'fa')} شما برای تاریخ ${dateString} ساعت ${selectedTime} رزرو شد`;
       if (activeBooking === 'table') {
         const tableInfo = restaurantTables.find(t => t.id === selectedTable);
         successMessage += ` (${getMealName(selectedMeal, 'fa')}، میز ${selectedTable} - ${tableInfo?.seats} صندلی)`;
@@ -118,7 +130,7 @@ const BookingPage = () => {
         }
       }
     } else {
-      successMessage = `تم حجز ${getActivityName(activeBooking, 'ar')} الخاص بك للساعة ${selectedTime}`;
+      successMessage = `تم حجز ${getActivityName(activeBooking, 'ar')} الخاص بك للتاريخ ${dateString} الساعة ${selectedTime}`;
       if (activeBooking === 'table') {
         const tableInfo = restaurantTables.find(t => t.id === selectedTable);
         successMessage += ` (${getMealName(selectedMeal, 'ar')}، طاولة ${selectedTable} - ${tableInfo?.seats} مقاعد)`;
@@ -251,6 +263,12 @@ const BookingPage = () => {
               />
             </div>
           )}
+          
+          {/* Date selection for all booking types */}
+          <DateSelection
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+          />
           
           {/* Time selection for all booking types */}
           <TimeSelection 
